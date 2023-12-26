@@ -1,12 +1,17 @@
 # Release Notes
 
-## v1.10.0 - Jun 29th, 2023
+## v1.11.0 - December 24st, 2023
+Features:
+
+- Added passkey client support for authentication and registration flows with iOS AuthenticationServices framework. This includes utilizing DaVinci endpoints as the server.
+
+## v1.10.0 - Jun 26th, 2023
 Features:
 
 - Updated SDK to version 1.10.0.
 - The PingOne MFA SDK has been updated to rotate encryption keys once a year. Key rotation events are written to the audit log.
 
-## v1.9.0 - April 19th, 2023
+## v1.9.0 - April 1st, 2023
 Features:
 
 - Updated SDK to version 1.9.0.

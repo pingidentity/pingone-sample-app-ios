@@ -30,6 +30,7 @@ Reference documentation is available for PingOne for Customers Mobile SDK, descr
 3. [Migrate from PingID SDK to PingOne SDK](#migrate)
     1. [Manual flow](#migrate_manual)
     2. [Push notification flow](#migrate_push)
+4. [Passkeys Implementation](./Passkeys/Passkeys_Implementation.md)
 
 
 <a name="sample_app"></a>
@@ -279,4 +280,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SAMPLE CODE OR THE USE OR OTHER DEALINGS IN
 THE SAMPLE CODE.  FURTHERMORE, THIS SAMPLE CODE IS NOT COMMERCIALLY SUPPORTED BY PING IDENTITY BUT QUESTIONS MAY BE ADDRESSED TO PING'S SUPPORT CENTER OR MAY BE OTHERWISE ADDRESSED IN THE RELATED DOCUMENTATION.
 
-Any questions or issues should go to the support center, or may be discussed in the [Ping Identity developer communities](https://support.pingidentity.com/s/topic/0TO1W000000atTxWAI/pingone-mfa).
+Any questions or issues should go to the support center, or may be discussed in the [Ping Identity developer communities](https://community.pingidentity.com/collaborate).

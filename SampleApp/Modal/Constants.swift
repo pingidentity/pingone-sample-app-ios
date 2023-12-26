@@ -31,6 +31,7 @@ struct SDKFunctionality {
     static let OneTimePasscode          = "One Time Passcode"
     static let QRAuth                   = "QR Authentication"
     static let SendLogs                 = "SendLogs"
+    static let Passkeys                 = "Passkeys"
 }
 
 struct SegueName {
@@ -40,6 +41,7 @@ struct SegueName {
     static let passcode                 = "passcode"
     static let QRAuth                   = "QRAuth"
     static let UserApproval             = "UserApproval"
+    static let Passkeys                 = "passkeys"
 }
 
 struct Local {
@@ -72,4 +74,27 @@ struct Push {
 
 struct OneTimePasscodeError {
     static let notPaired               = "Device Not Paired"
+}
+
+struct Passkeys {
+    static let EnvId                   = "<#passkeysEnvId#>"
+    static let ClientId                = "<#passkeysClientId#>"
+    static let UrlBase                 = "<#passkeysUrlBase#>"
+    static let AuthUrl                 = "\(UrlBase)/\(EnvId)/as/authorize?client_id=\(ClientId)&scope=openid&response_type=code&response_mode=pi.flow"
+    static let Domain                  = "<#passkeysRpId#>"
+    static let RpId                    = "https://\(Domain)"
+    static let RpIdKey                 = "rpId"
+    static let RegisterNotice          = "No Passkey found.\nLogin to register a Passkey."
+    static let Username                = "username"
+    static let Password                = "password"
+    static let Submit                  = "Submit"
+    static let RegisterComplete        = "Passkey register completed."
+    static let ErrorDomainPingOne      = "PingOneErrorDomain"
+    static let DeviceAuthenticationId  = "deviceAuthenticationId"
+    static let Assertion               = "assertion"
+    static let Attestation             = "attestation"
+    static let UserId                  = "userId"
+    static let DeviceId                = "deviceId"
+    static let Origin                  = "origin"
+    static let missingCredMsg          = "Please remove placeholders from Constants file and add your own credentials."
 }

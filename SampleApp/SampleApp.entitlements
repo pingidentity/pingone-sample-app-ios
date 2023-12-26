@@ -6,5 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.usernotifications.time-sensitive</key>
 	<true/>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+        <string>webcredentials:YOUR_DOMAIN</string>
+	</array>
 </dict>
 </plist>

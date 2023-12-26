@@ -1,5 +1,10 @@
 # Release Notes
 
+## v1.11.0 - December 24st, 2023
+Features:
+
+- Added passkey client support for authentication and registration flows with iOS AuthenticationServices framework. This includes utilizing DaVinci endpoints as the server.
+
 ## v1.10.0 - Jun 29th, 2023
 Features:
 

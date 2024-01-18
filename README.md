@@ -20,7 +20,7 @@ Reference documentation is available for PingOne for Customers Mobile SDK, descr
 * [PingOne for Customers Mobile SDK developer documentation](https://apidocs.pingidentity.com/pingone/native-sdks/v1/api/#pingone-mfa-native-sdks)
 
 ### Content
-1. [PingOne Mobile SDK sample app](#sample_app)
+1. [Getting started](#getting_started)
     1. [Pairing](#sample_app_pairing)
     2. [Send logs](#sample_app_send_logs)
     3. [Get one time passcode](#sample_app_otp)
@@ -33,10 +33,31 @@ Reference documentation is available for PingOne for Customers Mobile SDK, descr
 4. [Passkeys Implementation](./Passkeys/Passkeys_Implementation.md)
 
 
-<a name="sample_app"></a>
-### 1. PingOne Mobile SDK sample app
+<a name="getting_started"></a>
+### 1. Getting Started
 
-The PingOne Mobile SDK bundle provides a sample app that includes all the basic flows in order to help you get started.
+The PingOne Mobile SDK bundle provides a sample app that includes all the basic flows. To help you get started, follow these steps:
+
+#### Push Notifications
+
+Configure your app in Xcode to work with push notifications by referring to the SDK documentation [here](https://github.com/pingidentity/pingone-mobile-sdk-ios#:~:text=5.-,Working%20with%20push%20messages%20in%20iOS,-This%20section%20details).
+
+#### OIDC
+
+Set the OIDC parameters in the `/Modal/Constants.swift` class from the PingOne console. Navigate to **Applications** → **YOUR_APP** and find:
+- `Client ID` - under YOUR_APP details.
+- `Issuer` - under the **Configuration** tab, located in **Urls**.
+- `RedirectURI` - under the **Configuration** tab, located in **Redirect URIs**.
+
+#### Passkeys
+
+Configure the passkey parameters in `/Modal/Constants.swift` following the documentation [here](https://github.com/pingidentity/pingone-sample-app-ios/blob/master/Passkeys/Passkeys_Implementation.md#:~:text=In%20the%20sample%20app%27s%20Constants.Swift%20class%2C%20replace%20these%20credentials%20with%20the%20relevant%20values).
+
+#### Authentication API
+
+Explore open-source code demonstrating how to use the [PingIdentity Authentication API](https://docs.pingidentity.com/bundle/pingfederate-93/page/qsl1564002999029.html) for a browser-less OAuth flow in iOS projects through a **PingFederate** authentication policy. The code is available in a separate repository [here](https://github.com/pingidentity/mobile-authentication-framework-ios).
+
+To set it up, configure the constants in the `/PingAuthenticationCore/Config.swift` configuration class, following the documentation [here](https://github.com/pingidentity/mobile-authentication-framework-ios#:~:text=10.0%20and%20above.-,Getting%20Started,-Drag%20and%20drop).
 
 <a name="sample_app_pairing"></a>
 #### 1.1 Pairing

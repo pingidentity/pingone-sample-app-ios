@@ -714,7 +714,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		694659AC2AE983E70007CD46 /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
+			repositoryURL = "git@gitlab.corp.pingidentity.com:github-clones/pingone-mobile-sdk-ios.git";
 			requirement = {
 				branch = main;
 				kind = branch;

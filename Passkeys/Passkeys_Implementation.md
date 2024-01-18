@@ -3,6 +3,7 @@
 ## Overview
 
 This section contains information regarding passkey implementation in the PingOne MFA sample app for iOS, using a DaVinci server-side solution. Passkeys provide an additional layer of security and user verification, enhancing the trustworthiness of your app. Follow these instructions to integrate passkeys into your own iOS application seamlessly.
+
 **Note**: The passkey implementation relates to the PingOne server, not the mobile SDK. The sample app demonstrates how to implement passkey usage in a native iOS app.
 
 ## Prerequisites
@@ -18,6 +19,8 @@ The following are prerequisites if you want to implement passkey usage:
 
 <a name="davinci_setup"></a>
 ### 1. DaVinci setup
+In this sample app, we use the DaVinci implementation to function as the backend for the passkeys flows. Using DaVinci is not mandatory. The backend can be anything that is backed by PingOne MFA.
+
 **Note**: If you use a different backend to implement the FIDO server calls, skip this step and go to [Association file setup](#association_file_setup).
 
 #### PingOne environment
@@ -79,6 +82,7 @@ Create an OIDC application to run the DaVinci flow:
 #### Flow endpoints
 The endpoints for registering and authenticating when using passkeys are as follows (replace the variables where applicable).
 These endpoints always return HTTP code 200. If an error occurs, the error details are found in the response body, in `httpBody.error`.
+
 **Note:** The URLs in the example refer to the North America geography. If your environment is in a different geography, use:
 
     `auth.pingone.eu` for Europe
@@ -122,6 +126,7 @@ Next, get the values for the following credentials, referred to in the Davinci s
     `base url` (for example, `auth.pingone.com`)
     `domain`
 In the sample app's `Constants.Swift` class, replace these credentials with the relevant values. 
+
 **Note:** `domain` represents the relying party responsible for registering or authenticating the device. It should be your server's unique domain for this purpose.
 
 <a name="association_file_setup"></a>
@@ -130,6 +135,33 @@ In the sample app's `Constants.Swift` class, replace these credentials with the 
 #### Create an association file
 
 To associate your website with the app, you need to create an associated domain file on your website and configure the appropriate entitlements in your app. Refer to Apple's documentation for detailed instructions. Note that after uploading the apple-app-site-association (AASA) file, Apple's CDN may take up to 24 hours to update its cache. You can check the AASA file status using the Apple tool at `https://app-site-association.cdn-apple.com/a/v1/<YOUR_DOMAIN>`.
+
+Example for the `apple-app-site-association` JSON file can be found [here](https://developer.apple.com/documentation/xcode/supporting-associated-domains#Add-the-associated-domain-file-to-your-website:~:text=The%20following%20JSON%20code%20represents%20the%20contents%20of%20a%20simple%20association%20file).
+
+Here's a simplified JSON example:
+
+```json
+{
+  "applinks": {
+    "details": [
+    ]
+  },
+  "webcredentials": {
+    "apps": [ "ABCDE12345.<YOUR_DOMAIN>" ]
+  },
+  "appclips": {
+    "apps": [
+    ]
+  }
+}
+```
+
+**Note**:
+* In order for passkeys to work, need to set the `webcredentials` object as shown above.
+* `ABCDE12345` is a placeholder for your developer team ID.
+* `<YOUR_DOMAIN>` should be the same value as `Domain` in the `\Modal\Constants.Swift` class.
+* In case you need this file to support several applications, add them separately into the `webcredentials` in the `apps` array in the json above.
+* Make sure your apple-app-site-association file is properly formatted using tools such as [this](https://yurl.chayev.com/).
 
 #### Xcode setup
 

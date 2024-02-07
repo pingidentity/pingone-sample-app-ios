@@ -69,7 +69,7 @@ To manually pair the device, call the following method with your pairing key:
 ///
 /// - Parameters:
 ///   - pairingKey: The `String` value
-///   - completionHandler: Will return PairingInfo object containing data about pairing resolution, and NSError in case of an error. Documentation for pairing object error codes: https://apidocs.pingidentity.com/pingone/mobile-sdks/v1/api/#pingone-mobile-sdk-for-ios
+///   - completionHandler: Will return PairingInfo object containing data about pairing resolution, and NSError in case of an error. Documentation for pairing object error codes: https://apidocs.pingidentity.com/pingone/native-sdks/v1/api/#pingone-mobile-sdk-for-ios
 @objc public static func pair(_ pairingKey: String, completion: @escaping (_ response: PairingInfo?, NSError?) -> Void)
 ```
 

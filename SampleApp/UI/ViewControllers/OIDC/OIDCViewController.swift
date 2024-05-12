@@ -51,7 +51,7 @@ class OIDCViewController: UIViewController {
             let payload = try PingOne.generateMobilePayload()
             
             // builds authentication request
-            let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: clientSecret, scopes: [OIDScopeOpenID, OIDScopeProfile], redirectURL: redirectURI, responseType: OIDResponseTypeCode, additionalParameters: [OIDCKey.MobilePayload: payload])
+            let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: clientSecret, scopes: [OIDScopeOpenID, OIDScopeProfile], redirectURL: redirectURI, responseType: OIDResponseTypeCode, additionalParameters: [OIDCKey.MobilePayload: payload, OIDCKey.PromptKey: OIDCKey.PromptValue])
 
             // performs authentication request
             print("Initiating authorization request with scope: \(request.scope ?? "DEFAULT_SCOPE")")

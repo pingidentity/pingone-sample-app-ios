@@ -1,5 +1,11 @@
 # Release Notes
 
+## v1.11.1 - May 12th, 2024
+Features:
+
+- Updated SDK to version 1.10.1.
+- In situations where multiple users carried out OIDC-based pairing on the same device without the application being closed in between, error 10013 was displayed - "Pairing is currently in progress - you cannot make another API call until it is completed." This issue has been resolved.
+
 ## v1.11.0 - December 24st, 2023
 Features:
 

@@ -16,6 +16,8 @@ struct OIDC {
 
 struct OIDCKey {
     static let MobilePayload            = "mobilePayload"
+    static let PromptKey                = "prompt"
+    static let PromptValue              = "login"
 }
 
 struct PairingMethodName {

@@ -65,6 +65,8 @@ To set it up, configure the constants in the `/PingAuthenticationCore/Config.swi
 To manually pair the device, call the following method with your pairing key:
 
 ```swift
+/// Pair device
+///
 /// Pairs the device with the PingOne server using the `pairing key`.
 ///
 /// - Parameter pairingKey: pairing key as a string.

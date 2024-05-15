@@ -431,7 +431,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-            shellScript = "";
+			shellScript = "";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -645,7 +645,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.0;
+				MARKETING_VERSION = 1.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pingIdentity.p14c.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "P14C Sample InHouse Development";
@@ -677,7 +677,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.0;
+				MARKETING_VERSION = 1.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pingIdentity.p14c.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "P14C Sample InHouse Distribution";

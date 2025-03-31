@@ -27,7 +27,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let QRAuthAction = ActionItem.init(actionName: SDKFunctionality.QRAuth, segueID: SegueName.QRAuth, actionType: .segue)
         let logsAction = ActionItem.init(actionName: SDKFunctionality.SendLogs, segueID: nil, actionType: .sendLogs)
         let passkeysAction = ActionItem.init(actionName: SDKFunctionality.Passkeys, segueID: SegueName.Passkeys, actionType: .segue)
-        actionsArray = [pairAction, oidcAction, passkeysAction, authnAction, logsAction, passcodeAction, QRAuthAction]
+        let notificationsTestAction = ActionItem.init(actionName: SDKFunctionality.NotificationTest, segueID: SegueName.NotificationTest, actionType: .segue)
+        actionsArray = [pairAction, oidcAction, passkeysAction, authnAction, logsAction, passcodeAction, QRAuthAction, notificationsTestAction]
         self.navigationItem.title = Local.appTitle
         if let version = getAppVersionAndBuild() {
             versionOutlt.text = version

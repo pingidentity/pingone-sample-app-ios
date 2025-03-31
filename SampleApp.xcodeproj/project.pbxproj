@@ -41,6 +41,9 @@
 		69EC90EA2636020C00329D83 /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69EC90E42636020C00329D83 /* AppViewController.swift */; };
 		69EC90EB2636020C00329D83 /* PingAuthenticationUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69EC90E52636020C00329D83 /* PingAuthenticationUI.swift */; };
 		69EC90EC2636020C00329D83 /* AuthMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69EC90E62636020C00329D83 /* AuthMain.storyboard */; };
+		69F1AFAD2B433F8D007D6F2F /* NotificationTestCellTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F1AFAA2B433F8D007D6F2F /* NotificationTestCellTableViewCell.swift */; };
+		69F1AFAE2B433F8D007D6F2F /* NotificationTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F1AFAB2B433F8D007D6F2F /* NotificationTestViewController.swift */; };
+		69F1AFAF2B433F8D007D6F2F /* NotificationTestCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 69F1AFAC2B433F8D007D6F2F /* NotificationTestCellTableViewCell.xib */; };
 		7B32BA9B23687A46008C1CF5 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B32BA9A23687A46008C1CF5 /* Alert.swift */; };
 		7BA52470229AA65200DD0E06 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5246F229AA65200DD0E06 /* AppDelegate.swift */; };
 		7BA52472229AA65200DD0E06 /* ManualPairingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA52471229AA65200DD0E06 /* ManualPairingViewController.swift */; };
@@ -102,6 +105,9 @@
 		69EC90E42636020C00329D83 /* AppViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		69EC90E52636020C00329D83 /* PingAuthenticationUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PingAuthenticationUI.swift; sourceTree = "<group>"; };
 		69EC90E62636020C00329D83 /* AuthMain.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AuthMain.storyboard; sourceTree = "<group>"; };
+		69F1AFAA2B433F8D007D6F2F /* NotificationTestCellTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTestCellTableViewCell.swift; sourceTree = "<group>"; };
+		69F1AFAB2B433F8D007D6F2F /* NotificationTestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTestViewController.swift; sourceTree = "<group>"; };
+		69F1AFAC2B433F8D007D6F2F /* NotificationTestCellTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationTestCellTableViewCell.xib; sourceTree = "<group>"; };
 		7B32BA9A23687A46008C1CF5 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		7B9C1FBC2357A0F80069315F /* PingOne.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PingOne.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA5246C229AA65200DD0E06 /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,6 +243,7 @@
 				698E4A7F279FDBA2002D7553 /* QR Auth */,
 				7BA92C23235F004C0022D645 /* HomeViewController.swift */,
 				698E4A84279FDC8A002D7553 /* MainViewController.swift */,
+				69F1AFA92B433F8D007D6F2F /* TestNotifications */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -285,6 +292,16 @@
 				69EC90DD263601CE00329D83 /* UserData.swift */,
 			);
 			path = Modal;
+			sourceTree = "<group>";
+		};
+		69F1AFA92B433F8D007D6F2F /* TestNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				69F1AFAA2B433F8D007D6F2F /* NotificationTestCellTableViewCell.swift */,
+				69F1AFAB2B433F8D007D6F2F /* NotificationTestViewController.swift */,
+				69F1AFAC2B433F8D007D6F2F /* NotificationTestCellTableViewCell.xib */,
+			);
+			path = TestNotifications;
 			sourceTree = "<group>";
 		};
 		7B9C1FBB2357A0F80069315F /* Frameworks */ = {
@@ -407,6 +424,7 @@
 			files = (
 				7BA5247A229AA65300DD0E06 /* LaunchScreen.storyboard in Resources */,
 				7BA52482229AA69B00DD0E06 /* Localizable.strings in Resources */,
+				69F1AFAF2B433F8D007D6F2F /* NotificationTestCellTableViewCell.xib in Resources */,
 				69EC90EC2636020C00329D83 /* AuthMain.storyboard in Resources */,
 				7BA52477229AA65300DD0E06 /* Assets.xcassets in Resources */,
 				7BA52475229AA65200DD0E06 /* Main.storyboard in Resources */,
@@ -452,6 +470,7 @@
 				69EC90E0263601CE00329D83 /* UserData.swift in Sources */,
 				698E4A8C279FDF47002D7553 /* QRCapture.swift in Sources */,
 				7BA92C2A235F00600022D645 /* OIDCViewController.swift in Sources */,
+				69F1AFAD2B433F8D007D6F2F /* NotificationTestCellTableViewCell.swift in Sources */,
 				69EC90D7263601AE00329D83 /* CommunicationManager.swift in Sources */,
 				698E4A7D279FDB98002D7553 /* QRScanViewController.swift in Sources */,
 				69EC90E72636020C00329D83 /* UILogicLayer.swift in Sources */,
@@ -460,6 +479,7 @@
 				694193A12AA4AA6A00068C90 /* PKDeviceFlowManager.swift in Sources */,
 				69155A7A244C4F2800CD0D16 /* Extension+UIColor.swift in Sources */,
 				69C45840254FE38C00010773 /* AuthnViewController.swift in Sources */,
+				69F1AFAE2B433F8D007D6F2F /* NotificationTestViewController.swift in Sources */,
 				698E4A8B279FDF47002D7553 /* UsersHandler.swift in Sources */,
 				7BA52470229AA65200DD0E06 /* AppDelegate.swift in Sources */,
 				697679F32AA06A1F009924DE /* PasskeysViewController.swift in Sources */,
@@ -537,7 +557,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 774;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -600,7 +620,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 774;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -630,7 +650,7 @@
 				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 774;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = YZYUGL7S48;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YZYUGL7S48;
@@ -645,7 +665,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pingIdentity.p14c.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "P14C Sample InHouse Development";
@@ -663,7 +683,7 @@
 				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 774;
 				DEVELOPMENT_TEAM = YZYUGL7S48;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YZYUGL7S48;
 				ENABLE_BITCODE = NO;
@@ -677,7 +697,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pingIdentity.p14c.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "P14C Sample InHouse Distribution";
@@ -714,7 +734,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		694659AC2AE983E70007CD46 /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
+            repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
 			requirement = {
 				branch = main;
 				kind = branch;

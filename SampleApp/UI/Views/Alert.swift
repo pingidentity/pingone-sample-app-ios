@@ -151,4 +151,42 @@ struct Alert {
             viewController.present(generalAlert, animated: true, completion: nil)
         }
     }
+    
+    static func numberMatching(viewController: UIViewController, type: String, title: String, message: String? = nil, numberMatchingList: [Int], completionHandler: @escaping (_ pickedNumber: Int) -> Void) {
+        DispatchQueue.main.async {
+            let authAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            
+            if type == Push.NumberMatchingOptions {
+                
+                for option in numberMatchingList {
+                    let numAction = UIAlertAction(title: "\(option)", style: UIAlertAction.Style.default) { UIAlertAction in
+                        completionHandler(option)
+                    }
+                    authAlert.addAction(numAction)
+                }
+                
+            } else if type == Push.NumberMatchingManual {
+                
+                authAlert.addTextField { textField in
+                    textField.placeholder = "Enter number"
+                    textField.keyboardType = .numberPad
+                }
+                let okAction = UIAlertAction(title: Local.Ok, style: .default) { _ in
+                    // Get the text from the text field
+                    if let textField = authAlert.textFields?.first, let userInput = textField.text {
+                        print("User entered: \(userInput)")
+                        // Handle the user input
+                        if let pickedNum = Int(userInput) {
+                            completionHandler(pickedNum)
+                        }
+                    }
+                }
+                authAlert.addAction(okAction)
+            }
+
+            authAlert.view.accessibilityIdentifier = "num_matching"
+            authAlert.view.accessibilityValue = "\(title)"
+            viewController.present(authAlert, animated: true, completion: nil)
+        }
+    }
 }

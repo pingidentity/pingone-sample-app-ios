@@ -41,33 +41,44 @@ class OIDCViewController: UIViewController {
             print("Error creating URL for: \(OIDC.RedirectURI)")
             return
         }
+        PingOne.generateMobilePayload { payload, error in
+            if let error {
+                Alert.generic(viewController: self, message: nil, error: error)
+            } else if let payload {
+                // builds authentication request
+                let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: clientSecret, scopes: [OIDScopeOpenID, OIDScopeProfile], redirectURL: redirectURI, responseType: OIDResponseTypeCode, additionalParameters: [OIDCKey.MobilePayload: payload, OIDCKey.PromptKey: OIDCKey.PromptValue])
 
+                // performs authentication request
+                print("Initiating authorization request with scope: \(request.scope ?? "DEFAULT_SCOPE")")
+                self.appAuthRequest(With: request)
+            }
+        }
+    }
+    
+    func appAuthRequest(With request: OIDAuthorizationRequest) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             print("Error accessing AppDelegate")
             return
         }
+        appDelegate.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: self) { authState, error in
 
-        do {
-            let payload = try PingOne.generateMobilePayload()
-            
-            // builds authentication request
-            let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: clientSecret, scopes: [OIDScopeOpenID, OIDScopeProfile], redirectURL: redirectURI, responseType: OIDResponseTypeCode, additionalParameters: [OIDCKey.MobilePayload: payload, OIDCKey.PromptKey: OIDCKey.PromptValue])
-
-            // performs authentication request
-            print("Initiating authorization request with scope: \(request.scope ?? "DEFAULT_SCOPE")")
-
-            appDelegate.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: self) { authState, error in
-
-                if let authState = authState {
-                    print("Got authorization tokens. Access token: \(authState.lastTokenResponse?.accessToken ?? "DEFAULT_TOKEN")")
-                    // Call PingOne SDK with the idToken
-                    self.processIdToken(authState.lastTokenResponse?.idToken ?? "DEFAULT_TOKEN")
-                } else {
-                    print("Authorization error: \(error?.localizedDescription ?? "DEFAULT_ERROR")")
+            if let authState = authState, let idToken = authState.lastTokenResponse?.idToken {
+                // Show idToken
+                print("Got authorization tokens. Access token: \(authState.lastTokenResponse?.accessToken ?? "DEFAULT_TOKEN")")
+                
+                DispatchQueue.main.async {
+                    let pairAlert = UIAlertController(title: Local.Success, message: Local.AuthCompleted, preferredStyle: .alert)
+                    pairAlert.addAction(UIKit.UIAlertAction(title: Local.Ok, style: .cancel, handler: { (action) in
+                        self.processIdToken(idToken)
+                    }))
+                    self.present(pairAlert, animated: true)
                 }
+
+            } else {
+                print("Authorization error: \(error?.localizedDescription ?? "DEFAULT_ERROR")")
+                Alert.generic(viewController: self, message: "Authorization error", error: error as NSError?)
+                UIPasteboard.general.string = "\(error?.localizedDescription ?? "DEFAULT_ERROR")"
             }
-        } catch let error {
-            print(error)
         }
     }
 

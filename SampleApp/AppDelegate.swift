@@ -23,9 +23,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Always adopt a light interface style.
             window!.overrideUserInterfaceStyle = .light
         }
-        self.registerRemoteNotifications()
+        setUpPingOneSDK()
+        registerRemoteNotifications()
 
         return true
+    }
+    
+    func setUpPingOneSDK() {
+        // Configure for NorthAmerica in this case, but can be configured to any PingOneGeo
+        PingOne.configure(geo: .Europe) { error in
+            if let error {
+                print(error.debugDescription)
+            }
+        }
     }
     
     func registerRemoteNotifications() {
@@ -58,9 +68,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         deviceTokenType = .sandbox
         #endif
         
-        PingOne.setDeviceToken(deviceToken, type: deviceTokenType) { (error) in
-            if let error = error {
-                print(error.localizedDescription)
+        PingOne.setDeviceToken(token: deviceToken, type: deviceTokenType) { errors in
+            if let errors {
+                for error in errors {
+                    print(error.debugDescription)
+                }
             }
         }
     }
@@ -109,7 +121,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         self.displayNotificationViewAlert(notificationObject, title: title, msg: message)
                         completionHandler(UIBackgroundFetchResult.newData)
                     }
-
+                    
+                case .authCanceled:
+                    DispatchQueue.main.async { // Remove top vc
+                        self.removeTopView({
+                            completionHandler(UIBackgroundFetchResult.noData)
+                            }
+                        )
+                    }
                 default:
                     print("Error: \(String(describing: error))")
                     completionHandler(UIBackgroundFetchResult.noData)
@@ -134,39 +153,72 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func displayNotificationViewAlert(_ notificationObject: NotificationObject, title: String, msg: String) {
         DispatchQueue.main.async {
-            
-            var displayOnVc: UIViewController
-            guard let rootVc = self.window?.rootViewController else {
-                return
-            }
-            
-            if rootVc.presentedViewController != nil {
-                displayOnVc = rootVc.presentedViewController!
-            } else {
-                displayOnVc = rootVc
-            }
-
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationRecived"), object: nil)
-
-            Alert.approveDeny(viewController: displayOnVc, title: title, message: msg) { (approved) in
-                if let approved = approved {
-                    if approved {
-                        notificationObject.approve(withAuthenticationMethod: "user", completionHandler: { (error) in
-                            if error != nil {
-                                Alert.generic(viewController: displayOnVc, message: msg, error: error)
+            self.removeTopView({
+                var displayOnVc: UIViewController
+                guard let rootVc = self.window?.rootViewController else {
+                    return
+                }
+                
+                if rootVc.presentedViewController != nil {
+                    displayOnVc = rootVc.presentedViewController!
+                } else {
+                    displayOnVc = rootVc
+                }
+                
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationRecived"), object: nil)
+                
+                if notificationObject.numberMatchingType == Push.NumberMatchingOptions || notificationObject.numberMatchingType == Push.NumberMatchingManual {
+                    // Authentication with number matching
+                    Alert.numberMatching(viewController: displayOnVc, type: notificationObject.numberMatchingType, title: Local.NumMatchingPick, numberMatchingList: notificationObject.numberMatchingOptions) { pickedNumber in
+                        self.approveNumMatching(displayOnVc: displayOnVc, notificationObject: notificationObject, numberPicked: pickedNumber, title: title, message: msg)
+                    }
+                } else {
+                    // Authentication with approve / deny
+                    Alert.approveDeny(viewController: displayOnVc, title: title, message: msg) { (approved) in
+                        if let approved = approved {
+                            if approved {
+                                notificationObject.approve(withAuthenticationMethod: "user", completionHandler: { (error) in
+                                    if error != nil {
+                                        Alert.generic(viewController: displayOnVc, message: msg, error: error)
+                                    }
+                                })
+                            } else {
+                                notificationObject.deny(completionHandler: { (error) in
+                                    if error != nil {
+                                        Alert.generic(viewController: displayOnVc, message: msg, error: error)
+                                    }
+                                })
                             }
-                        })
-                    } else {
-                        notificationObject.deny(completionHandler: { (error) in
-                            if error != nil {
-                                Alert.generic(viewController: displayOnVc, message: msg, error: error)
-                            }
-                        })
+                        }
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationResponded"), object: nil)
                     }
                 }
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationResponded"), object: nil)
+            })
+        }
+    }
+    
+    func approveNumMatching(displayOnVc: UIViewController, notificationObject: NotificationObject, numberPicked: Int, title: String, message: String) {
+        notificationObject.approve(withAuthenticationMethod: "user", numberMatchingPickedValue: numberPicked as NSNumber) { error in
+            if error != nil {
+                 Alert.generic(viewController: displayOnVc, message: message, error: error)
             }
         }
+    }
+    
+    func removeTopView(_ completionHandler: @escaping () -> Void) {
+        guard let window: UIWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }), var topVC = window.rootViewController?.presentedViewController else {
+            completionHandler()
+            return
+        }
+        while topVC.presentedViewController != nil {
+            topVC = topVC.presentedViewController!
+        }
+        if let alertVC = topVC as? UIAlertController {
+            alertVC.dismiss(animated: false, completion: {
+                completionHandler()
+            })
+        }
+        completionHandler()
     }
     
     // OIDC

@@ -1,5 +1,14 @@
 # Release Notes
 
+## v2.0.0 - April 1st, 2025
+Features:
+
+- Updated SDK to version 2.0.0.
+- Added multi-region support (users from different geographic regions can pair to the same app).
+- Includes use of the new mandatory method, `configure`, which is required to set up the SDK.
+- Includes testing of push notification functionality using the new SDK method `testRemoteNotification`.
+- The sample app supports number matching and cancel authentication. For more details, refer to the [documentation](https://github.com/pingidentity/pingone-mobile-sdk-ios/blob/main/release-notes.md).
+
 ## v1.11.1 - May 12th, 2024
 Features:
 
@@ -109,7 +118,7 @@ Features:
 Compatibility notes:
 
 - Deprecated functions: `NotificationObject.approve(completionHandler: @escaping (NSError?) -> Void)`
-	  `@objc public static func processRemoteNotificationAction(_ identifier: String, forRemoteNotification userInfo: [AnyHashable : Any], completionHandler: @escaping (PingOne.NotificationObject?, NSError?) -> Void)`
+      `@objc public static func processRemoteNotificationAction(_ identifier: String, forRemoteNotification userInfo: [AnyHashable : Any], completionHandler: @escaping (PingOne.NotificationObject?, NSError?) -> Void)`
 - Sample app now using AppAuth 1.3.0
 
 ## v1.0.2 - October 30th, 2019

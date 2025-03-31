@@ -34,6 +34,7 @@ struct SDKFunctionality {
     static let QRAuth                   = "QR Authentication"
     static let SendLogs                 = "SendLogs"
     static let Passkeys                 = "Passkeys"
+    static let NotificationTest         = "Notifications Test"
 }
 
 struct SegueName {
@@ -44,6 +45,7 @@ struct SegueName {
     static let QRAuth                   = "QRAuth"
     static let UserApproval             = "UserApproval"
     static let Passkeys                 = "passkeys"
+    static let NotificationTest         = "testpush"
 }
 
 struct Local {
@@ -65,6 +67,7 @@ struct Local {
     static let AuthUserApprovalRequired         = "REQUIRED"
     static let UserSelectionTitle               = "Do you want to approve authentication for a user"
     static let ClientContextPlaceholder         = "clientContext will be placed here if returned from the SDK"
+    static let NumMatchingPick                  = "Set a number for authentication"
 }
 
 struct Push {
@@ -72,6 +75,13 @@ struct Push {
     static let alert                   = "alert"
     static let title                   = "title-loc-key"
     static let body                    = "loc-key"
+    static let NumberMatchingOptions   = "SELECT_NUMBER"
+    static let NumberMatchingManual    = "ENTER_MANUALLY"
+}
+
+struct PushTestIdentifiers {
+    static let APNSSandbox              = "Sandbox"
+    static let APNSProduction           = "Production"
 }
 
 struct OneTimePasscodeError {

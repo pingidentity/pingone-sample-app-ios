@@ -29,14 +29,15 @@ class AuthnViewController: UIViewController {
     
     func startAuthnAPI() {
         startLoadingAnimation()
-        
-        do {
-            let payload = try PingOne.generateMobilePayload()
-            authenticate(With: payload)
-           } catch let error {
+    
+        PingOne.generateMobilePayload { payload, error in
+            if let error {
                 self.stopLoadingAnimation()
                 print(error)
-           }
+            } else if let payload {
+                self.authenticate(With: payload)
+            }
+        }
     }
     
     func authenticate(With payload: String) {

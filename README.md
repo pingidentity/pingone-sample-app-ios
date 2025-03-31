@@ -26,6 +26,7 @@ Reference documentation is available for PingOne for Customers Mobile SDK, descr
     3. [Get one time passcode](#sample_app_otp)
     4. [Disable SDK push notifications](#sample_app_disable_push)
     5. [Authentication via QR code scanning](#sample_app_qr)
+    6. [Test remote notification](#sample_app_testPush)
 2. [Mobile Authentication Framework](#auth_framework)
 3. [Migrate from PingID SDK to PingOne SDK](#migrate)
     1. [Manual flow](#migrate_manual)
@@ -38,9 +39,13 @@ Reference documentation is available for PingOne for Customers Mobile SDK, descr
 
 The PingOne Mobile SDK bundle provides a sample app that includes all the basic flows. To help you get started, follow these steps:
 
+#### Configure the SDK
+
+You must configure the SDK at least once before using it. See the SDK documentation [here](https://github.com/pingidentity/pingone-mobile-sdk-ios#configure).
+
 #### Push Notifications
 
-Configure your app in Xcode to work with push notifications by referring to the SDK documentation [here](https://github.com/pingidentity/pingone-mobile-sdk-ios#:~:text=5.-,Working%20with%20push%20messages%20in%20iOS,-This%20section%20details).
+Configure your app in Xcode to work with push notifications as described in the SDK documentation [here](https://github.com/pingidentity/pingone-mobile-sdk-ios#work_with_push).
 
 #### OIDC
 
@@ -67,14 +72,9 @@ To manually pair the device, call the following method with your pairing key:
 ```swift
 /// Pair device
 ///
-/// Pairs the device with the PingOne server using the `pairing key`.
-///
-/// - Parameter pairingKey: pairing key as a string.
-///
-/// - Returns: a `completionHandler` which contains `PairingInfo`, a wrapper object that contains an array list with
-/// authentication methods (One time passcode and Push) status. The `PairingInfo` object will not be nil only on the first user's successful pairing.
-/// In case of an error will return NSError.
-/// Documentation for pairing object error codes can be found [here](https://apidocs.pingidentity.com/pingone/native-sdks/v1/api/#pingone-mobile-sdk-for-ios)
+/// - Parameters:
+///   - pairingKey: The `String` value
+///   - completionHandler: Will return PairingInfo object containing data about pairing resolution, and NSError in case of an error. Documentation for pairing object error codes: https://apidocs.pingidentity.com/pingone/mobile-sdks/v1/api/#pingone-mobile-sdk-for-ios
 @objc public static func pair(_ pairingKey: String, completion: @escaping (_ response: PairingInfo?, NSError?) -> Void)
 ```
 
@@ -82,7 +82,7 @@ To automatically pair the device using OpenID Connect:
 
 1. call this function to get the PingOne SDK mobile payload:
 ```swift
-@objc public static func generateMobilePayload() throws -> String
+@objc public static func generateMobilePayload(completionHandler: @escaping (_ payload: String?, _ error: NSError?) -> Void)
 ```
 2. pass the received mobile payload on the OIDC request as the value of query param: `mobilePayload`
 3. call this function with the ID token after the OIDC authentication completes:
@@ -175,6 +175,24 @@ AuthenticationObject return from the authenticate method, contains the following
 /// `DENIED` or `EXPIRED`.
 /// Returns NSError in case of an error.
 @objc public final func deny(_ userId: String? = nil, completionHandler: @escaping (_ status: String?, _ error: NSError?) -> Void)
+```
+
+<a name="sample_app_testPush"></a>
+#### 1.6 Test remote notification
+
+For paired devices, it is possible to test push notification functionality using the `testRemoteNotification` method:
+
+
+```swift
+/// Run push notification test
+///
+/// This method tests the push notification flow for a specified paired geography.
+///
+/// - Parameter geo: The selected geography, represented by an enum value.
+/// Valid options include: `NorthAmerica`, `Europe`, `Canada`, and `Australia`.
+///
+/// - Returns: An array of `NotificationTest` objects. In case of an error, an `NSError` object is returned.
+@objc public static func testRemoteNotification(_ geo: PingOneGeo, completionHandler: @escaping (_ results: [NotificationTest]?, _ status: NotificationTest.TestResult, _ error: NSError?) -> Void)
 ```
 
 <a name="auth_framework"></a>

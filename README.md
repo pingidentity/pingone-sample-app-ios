@@ -189,7 +189,7 @@ For paired devices, it is possible to test push notification functionality using
 /// This method tests the push notification flow for a specified paired geography.
 ///
 /// - Parameter geo: The selected geography, represented by an enum value.
-/// Valid options include: `NorthAmerica`, `Europe`, `Canada`, and `Australia`.
+/// Valid options include: `NorthAmerica`, `Europe`, `Canada`, `Australia`, and `Singapore`.
 ///
 /// - Returns: An array of `NotificationTest` objects. In case of an error, an `NSError` object is returned.
 @objc public static func testRemoteNotification(_ geo: PingOneGeo, completionHandler: @escaping (_ results: [NotificationTest]?, _ status: NotificationTest.TestResult, _ error: NSError?) -> Void)

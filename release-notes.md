@@ -1,6 +1,12 @@
 # Release Notes
 
-## v2.0.0 - April 1st, 2025
+## v2.1.0 - June 17th, 2025
+Features:
+
+- Updated SDK to version 2.1.0.
+- Added support for the PingOne Singapore geography.
+
+## v2.0.0 - Dec 5th, 2024
 Features:
 
 - Updated SDK to version 2.0.0.

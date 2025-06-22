@@ -1,14 +1,24 @@
 {
+  "originHash" : "74ae33fc2ca6c54f7697888451516a72235fb9677805a8ac4fab5277421cae7c",
   "pins" : [
+    {
+      "identity" : "appauth-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/openid/AppAuth-iOS.git",
+      "state" : {
+        "revision" : "2781038865a80e2c425a1da12cc1327bcd56501f",
+        "version" : "1.7.6"
+      }
+    },
     {
       "identity" : "pingone-mobile-sdk-ios",
       "kind" : "remoteSourceControl",
-      "location" : "git@gitlab.corp.pingidentity.com:github-clones/pingone-mobile-sdk-ios.git",
+      "location" : "https://gitlab.corp.pingidentity.com/github-clones/pingone-mobile-sdk-ios.git",
       "state" : {
         "branch" : "main",
-        "revision" : "1d75f5e53b23458ba86664f6c68b4d047f3a9d60"
+        "revision" : "011e027eeb919fce587b06b3fe888e2d30d5637f"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

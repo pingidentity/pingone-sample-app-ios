@@ -134,7 +134,6 @@ struct Identifiers {
     static let clientPlaceholder          = "<clientIdPlaceHolder>"
 }
 
-
 struct Response {
     static let status                     = "status"
     static let serverPayload              = "serverPayload"

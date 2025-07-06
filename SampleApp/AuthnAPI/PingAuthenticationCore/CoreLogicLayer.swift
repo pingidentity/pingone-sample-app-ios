@@ -70,9 +70,7 @@ final class CoreLogicLayer: NSObject {
     // MARK: requests handling
     
     private func startFlow(completionHandler: @escaping(_ response: AuthenticationState?, NSError?) -> Void) {
-        
         let getFlowIdRequestParams = RequestParams.init(urlStr: Config.oidcIssuer)
-        
         comm.post(requestParams: getFlowIdRequestParams, headerContentType: Identifiers.ContentTypeInitAuth, needUrlEncode: false) { (response, error) in
 
             if let errorObj = error {

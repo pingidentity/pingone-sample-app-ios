@@ -748,8 +748,8 @@
 			isa = XCRemoteSwiftPackageReference;
             repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
 			requirement = {
-				kind = exactVersion;
-				version = "2.1.1-2";
+                branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

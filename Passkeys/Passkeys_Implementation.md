@@ -3,7 +3,6 @@
 ## Overview
 
 This section contains information regarding passkey implementation in the PingOne MFA sample app for iOS, using a DaVinci server-side solution. Passkeys provide an additional layer of security and user verification, enhancing the trustworthiness of your app. Follow these instructions to integrate passkeys into your own iOS application seamlessly.
-
 **Note**: The passkey implementation relates to the PingOne server, not the mobile SDK. The sample app demonstrates how to implement passkey usage in a native iOS app.
 
 ## Prerequisites
@@ -19,8 +18,6 @@ The following are prerequisites if you want to implement passkey usage:
 
 <a name="davinci_setup"></a>
 ### 1. DaVinci setup
-In this sample app, we use the DaVinci implementation to function as the backend for the passkeys flows. Using DaVinci is not mandatory. The backend can be anything that is backed by PingOne MFA.
-
 **Note**: If you use a different backend to implement the FIDO server calls, skip this step and go to [Association file setup](#association_file_setup).
 
 #### PingOne environment
@@ -45,7 +42,7 @@ Create a PingOne environment if you don't already have one.
 
         <img src="../img/davinci_import.png" width="25%" height="20%">
 
-5. Create application and policy:
+5. Create DaVinci application and policy:
     1. In DaVinci, navigate to Applications.
     2. Click Add Application and give it a name (for example, "Native Passkeys").
     3. Click the new application to edit it.
@@ -62,7 +59,7 @@ Create a PingOne environment if you don't already have one.
 
 Create an OIDC application to run the DaVinci flow:
 
-1. In your PingOne environment, navigate to Connections → Applications. 
+1. In your PingOne environment, navigate to Applications → Applications. 
 2. Create an OIDC application and enable it.
 3. Go to the Policies tab for the new application.
 4. Click the pencil button to edit.
@@ -72,22 +69,21 @@ Create an OIDC application to run the DaVinci flow:
 
 #### FIDO policy
 
-1. In your PingOne environment, navigate to Experiences → Policies → FIDO 
+1. In your PingOne environment, navigate to Authentication → FIDO 
 2. You will see a FIDO policy called _Passkeys_. Make sure it is set as the default FIDO policy. Open the _Passkeys_ policy and verify that it has the following settings:
-    1. Relying Party ID should be set to your `domain` (the domain where you have `.well-known/assetlinks.json` and `.well-known/apple-app-site-association`).
-    2. Discoverable Credentials set to `Required`.
-    3. User Verification set to `Required`.
-    4. Backup Eligibility set to `Allow`.
+    * Relying Party ID should be set to your `domain` (the domain where you have `.well-known/assetlinks.json` and `.well-known/apple-app-site-association`).
+    * Discoverable Credentials set to `Required`.
+    * User Verification set to `Required`.
+    * Backup Eligibility set to `Allow`.
 
 #### Flow endpoints
 The endpoints for registering and authenticating when using passkeys are as follows (replace the variables where applicable).
 These endpoints always return HTTP code 200. If an error occurs, the error details are found in the response body, in `httpBody.error`.
-
 **Note:** The URLs in the example refer to the North America geography. If your environment is in a different geography, use:
 
-    `auth.pingone.eu` for Europe
-    `auth.pingone.ca` for Canada
-    `auth.pingone.ap` for Australia
+    `https://auth.pingone.eu` for Europe
+    `https://auth.pingone.ca` for Canada
+    `https://auth.pingone.ap` for Australia
 
 #####Start username-less authentication
 GET https://auth.pingone.com/{{envId}}/as/authorize?client_id={{client_id}}&scope=openid&response_type=code&response_mode=pi.flow
@@ -126,7 +122,6 @@ Next, get the values for the following credentials, referred to in the Davinci s
     `base url` (for example, `auth.pingone.com`)
     `domain`
 In the sample app's `Constants.Swift` class, replace these credentials with the relevant values. 
-
 **Note:** `domain` represents the relying party responsible for registering or authenticating the device. It should be your server's unique domain for this purpose.
 
 <a name="association_file_setup"></a>
@@ -135,33 +130,6 @@ In the sample app's `Constants.Swift` class, replace these credentials with the 
 #### Create an association file
 
 To associate your website with the app, you need to create an associated domain file on your website and configure the appropriate entitlements in your app. Refer to Apple's documentation for detailed instructions. Note that after uploading the apple-app-site-association (AASA) file, Apple's CDN may take up to 24 hours to update its cache. You can check the AASA file status using the Apple tool at `https://app-site-association.cdn-apple.com/a/v1/<YOUR_DOMAIN>`.
-
-Example for the `apple-app-site-association` JSON file can be found [here](https://developer.apple.com/documentation/xcode/supporting-associated-domains#Add-the-associated-domain-file-to-your-website:~:text=The%20following%20JSON%20code%20represents%20the%20contents%20of%20a%20simple%20association%20file).
-
-Here's a simplified JSON example:
-
-```json
-{
-  "applinks": {
-    "details": [
-    ]
-  },
-  "webcredentials": {
-    "apps": [ "ABCDE12345.<YOUR_DOMAIN>" ]
-  },
-  "appclips": {
-    "apps": [
-    ]
-  }
-}
-```
-
-**Note**:
-* In order for passkeys to work, need to set the `webcredentials` object as shown above.
-* `ABCDE12345` is a placeholder for your developer team ID.
-* `<YOUR_DOMAIN>` should be the same value as `Domain` in the `\Modal\Constants.Swift` class.
-* In case you need this file to support several applications, add them separately into the `webcredentials` in the `apps` array in the json above.
-* Make sure your apple-app-site-association file is properly formatted using tools such as [this](https://yurl.chayev.com/).
 
 #### Xcode setup
 
@@ -225,6 +193,67 @@ In this example, the server expects to get the `attestation` and `assertion` obj
 
 #### Handle responses
 The `PKDeviceFlowManager.Swift` class manages all communication with the server and the user interface. Notifications are used to observe iOS responses to passkey requests for registration and authentication.
+
+
+### 5. Automatic PassKey Enrollment
+
+You can enable automatic passkey enrollment. This feature streamlines the user experience by using a conditional request type when creating a passkey registration request in `PKManager`.
+
+To enable this feature in the sample app, navigate to `PingOneSDK/SampleApp/SampleApp/Modal/Constants.swift` and set the `isAutoEnrollmentEnabled` property within the `Passkeys` struct to `true`.
+
+```swift
+struct Passkeys {
+    // ... other properties
+    static let isAutoEnrollmentEnabled   =  true
+}
+```
+
+This change will activate the conditional UI for passkey creation during the registration process.
+
+<a name="passkey_flow"></a>
+### 6. Passkey Flow
+
+This section describes the end‑to‑end passkey user experience implemented in the sample app. It focuses on how a traditional username/password registration transparently upgrades to a passkey (WebAuthn / FIDO credential) and how subsequent sign‑ins branch depending on whether a passkey already exists.
+
+#### 6.1 Overview
+The Passkeys screen presents two primary actions:
+
+1. Create Account
+2. Sign In
+
+The flow intentionally separates initial credential capture (so the system can offer to save the password in iCloud Keychain / Passwords) from the passkey creation/sign‑in sequence. Auto‑enrollment into a passkey can occur immediately after a credential-based sign‑in when enabled.
+
+#### 6.2 Create Account (Initial Registration)
+1. User taps Create Account.
+2. A modal dialog prompts for Username and Password.
+3. On Submit:
+     - The app performs login using those credentials.
+     - iOS will (if supported and not suppressed) prompt the user to save the credentials to the system Passwords manager.
+4. Saving the credentials is strongly recommended. It is a prerequisite for seamless automatic passkey upgrade (auto‑enrollment) on the next Sign In attempt, because the saved credential enables the system to associate and suggest a passkey for that account.
+5. After successful account creation and saving of the credential, the user returns to the Passkeys screen and proceeds by tapping Sign In.
+
+#### 6.3 Sign In Button – Decision Tree
+When the user taps Sign In, the app evaluates whether a passkey already exists for the account on the device (or in the user’s iCloud Keychain across devices):
+
+Case A: Passkey already exists → Perform passkey assertion (authentication) directly. The system passkey sheet appears and, upon successful user verification (Face ID / Touch ID / device PIN), the sign‑in completes.
+
+Case B: Passkey does NOT exist → The user is first asked to sign in again using the saved username/password credentials (now sourced from the system Passwords autofill / credential manager to minimize friction). Once this sign‑in succeeds, one of two enrollment paths is taken depending on auto‑enrollment configuration.
+
+#### 6.4 Auto‑Enrollment vs Explicit Enrollment
+Configuration flag (in your constants/config file):
+```swift
+static let isAutoEnrollmentEnabled = true
+```
+
+Behavior:
+* isAutoEnrollmentEnabled == true
+    - After the credential-based sign‑in (Case B above), the app automatically triggers passkey creation with no extra user action
+    - Subsequent Sign In actions follow Case A.
+* isAutoEnrollmentEnabled == false
+    - After credential sign‑in, the user is explicitly prompted (custom UI or call‑to‑action) to Create a Passkey.
+    - Selecting that prompt invokes the system passkey registration sheet; upon confirmation a passkey is created. Subsequent Sign In actions follow Case A.
+
+**Note:** This functionality is only available on iOS 18 or later.
 
 
 ## Disclaimer

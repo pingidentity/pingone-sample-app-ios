@@ -96,7 +96,8 @@ struct Passkeys {
     static let Domain                  = "<#passkeysRpId#>"
     static let RpId                    = "https://\(Domain)"
     static let RpIdKey                 = "rpId"
-    static let RegisterNotice          = "No Passkey found.\nLogin to register a Passkey."
+    static let LoginToCreatePasskey    = "Login to create a Passkey."
+    static let Login                   = "Login to create account"
     static let Username                = "username"
     static let Password                = "password"
     static let Submit                  = "Submit"
@@ -109,4 +110,57 @@ struct Passkeys {
     static let DeviceId                = "deviceId"
     static let Origin                  = "origin"
     static let missingCredMsg          = "Please remove placeholders from Constants file and add your own credentials."
+    static let isAutoEnrollmentEnabled =  true
+    // ADDED: Debug method to verify endpoint is working
+    static func validateEndpoint(completion: @escaping (Bool) -> Void) {
+        print("🔍 Validating PingOne endpoint configuration...")
+
+        guard let url = URL(string: AuthUrl) else {
+            print("❌ Invalid URL format")
+            completion(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("❌ Network error: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("❌ Invalid response type")
+                completion(false)
+                return
+            }
+
+            print("📊 HTTP Status: \(httpResponse.statusCode)")
+            print("📊 Content-Type: \(httpResponse.allHeaderFields["Content-Type"] ?? "unknown")")
+
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                let isJSON = responseString.starts(with: "{") || responseString.starts(with: "[")
+                let isHTML = responseString.starts(with: "<")
+
+                print("📊 Response type: \(isJSON ? "JSON ✅" : isHTML ? "HTML ❌" : "Unknown")")
+                print("📊 Response length: \(responseString.count) characters")
+
+                if isJSON {
+                    print("✅ Endpoint returning JSON - configuration correct")
+                    completion(true)
+                } else {
+                    print("❌ Endpoint returning HTML - wrong environment/configuration")
+                    print("First 200 chars: \(String(responseString.prefix(200)))")
+                    completion(false)
+                }
+            } else {
+                print("❌ No response data")
+                completion(false)
+            }
+        }.resume()
+    }
+
 }

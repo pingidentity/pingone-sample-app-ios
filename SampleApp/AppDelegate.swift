@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func setUpPingOneSDK() {
         // Configure for NorthAmerica in this case, but can be configured to any PingOneGeo
-        PingOne.configure(geo: .Europe) { error in
+        PingOne.configure(geo: .NorthAmerica) { error in
             if let error {
                 print(error.debugDescription)
             }

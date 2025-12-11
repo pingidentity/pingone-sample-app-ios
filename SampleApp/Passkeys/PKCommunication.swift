@@ -8,66 +8,88 @@
 import Foundation
 
 final class PKCommunication {
-    
-    func post(urlStr: String, completionHandler: @escaping (_ response: [String: Any]?, _ error: NSError?) -> Void) {
+    func sendHttpRequest(urlStr: String, jsonData: [String: Any]? = nil,
+              completionHandler: @escaping (_ response: [String: Any]?, _ error: NSError?) -> Void) {
+        guard let requestUrl = URL(string: urlStr) else { return }
 
-        guard let requestUrl =  URL(string: urlStr) else {
-            return
-        }
-        
+#if DEBUG
+        print("**************************************************")
+        print("Sending URL:     \(urlStr)")
+        print("Sending data:     \(String(describing: jsonData))")
+        print("**************************************************")
+#endif
+
         var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        
-        urlRequest.allHTTPHeaderFields = ["ContentType": "application/json"]
-        
-        #if DEBUG
-        print("**************************************************")
-        print("Sending Url:     \(requestUrl)")
-        print("**************************************************")
-        #endif
-        
-        // Send request
-        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-                        
-            guard let data = data, error == nil else {
-                completionHandler(nil, error as NSError?)
+        urlRequest.httpMethod = jsonData == nil ? "GET" : "POST"
+
+        // Always prefer JSON responses
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        if let jsonData = jsonData {
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            do {
+                urlRequest.httpBody = try JSONSerialization.data(withJSONObject: jsonData)
+                print("📋 Sending JSON payload in body")
+            } catch {
+                completionHandler(nil, NSError(domain: "PKCommunication",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "JSON serialization failed"]))
                 return
             }
-                
-            let httpResponse = response as! HTTPURLResponse
+        } else {
+            urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        }
 
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Response:     \(String(describing: responseString))")
-                
-                // Cookie handle
-                if let url = httpResponse.url,
-                    let allHeaderFields = httpResponse.allHeaderFields as? [String: String] {
-                    let cookies = HTTPCookie.cookies(withResponseHeaderFields: allHeaderFields, for: url)
-                    HTTPCookieStorage.shared.setCookies(cookies, for: url, mainDocumentURL: nil)
-                }
-                
-                // Get the json response
-                var jsonDictionary: NSDictionary?
-                
-                do {
-                    jsonDictionary = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary
-                } catch {
-                    print("error parsing httpResponse to json")
-                }
+        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            guard let data = data, error == nil else { completionHandler(nil, error as NSError?); return }
 
-                if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
-                    if jsonDictionary != nil {
-                        completionHandler(jsonDictionary as? [String: Any], nil)
-                    }
+            guard let responseString = String(data: data, encoding: .utf8) else {
+                print("Response unprintable")
+                completionHandler(nil, NSError(domain: "PKCommunication",
+                                               code: -1,
+                                               userInfo: [NSLocalizedDescriptionKey: "Failed to parse response as UTF-8 string"]))
+                return
+            }
+
+#if DEBUG
+        print("**************************************************")
+        print("Response:   \(String(describing: responseString))")
+        print("**************************************************")
+#endif
+
+            // Quick sniff: did we accidentally hit HTML?
+            guard (responseString.trimmingCharactersAsWhitespace().hasPrefix("<!doctype html") || responseString.contains("<html")) == false else {
+                print("❌ HTML response detected — likely wrong endpoint or missing query params.")
+                completionHandler(nil, NSError(domain: "PKCommunication",
+                    code: -2,
+                    userInfo: [NSLocalizedDescriptionKey: "Server returned HTML page instead of JSON"]))
+                return
+            }
+
+            // Parse JSON
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    completionHandler(json, nil)
                 } else {
-                    let error = NSError.init(domain: Passkeys.ErrorDomainPingOne, code: httpResponse.statusCode, userInfo: jsonDictionary as? [String: Any] ?? [:])
-                    print("Received error response: \(error.localizedDescription)")
-                        completionHandler(nil, error as NSError?)
+                    completionHandler(nil, NSError(domain: "PKCommunication",
+                        code: -3,
+                        userInfo: [NSLocalizedDescriptionKey: "Unexpected response type"]))
                 }
-                
+            } catch {
+                print("error parsing httpResponse to json")
+                completionHandler(nil, NSError(domain: "PKCommunication",
+                    code: -4,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid JSON response"]))
             }
             print("Communication task finished successfully")
         }
         task.resume()
     }
 }
+
+private extension String {
+    func trimmingCharactersAsWhitespace() -> String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+

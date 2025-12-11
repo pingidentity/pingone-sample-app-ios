@@ -9,31 +9,45 @@ import AuthenticationServices
 import Foundation
 import os
 
-
 @available(iOS 16.0, *)
 class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
     
     static let shared = PKManager()
     var authenticationAnchor: ASPresentationAnchor?
-    
+    private var isRegistrationFlow = false
+
     static func signUp(anchor: ASPresentationAnchor) {
-        guard let challenge = PKDataManager.shared.challenge, let userId = PKDataManager.shared.userIdData, let name = PKDataManager.shared.username else {
-            print("No challenge or userId from server")
+        print("🔐 Attempting passkey registration...")
+        print("Challenge available: \(PKDataManager.shared.challenge != nil)")
+        print("UserID available: \(PKDataManager.shared.userIdData != nil)")
+        print("Username: \(PKDataManager.shared.username ?? "nil")")
+
+        guard let challenge = PKDataManager.shared.challenge,
+              let userId = PKDataManager.shared.userIdData,
+              let name = PKDataManager.shared.username else {
+            print("❌ No challenge or userId from server")
             return
         }
+
         shared.authenticationAnchor = anchor
+        shared.isRegistrationFlow = true
         let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: Passkeys.Domain)
 
-        // Fetch the challenge from the server. The challenge needs to be unique for each request.
-        // The userID is the identifier for the user's account.
-        
-        let registrationRequest = publicKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge, name: name, userID: userId)
+        let registrationRequest = if Passkeys.isAutoEnrollmentEnabled {
+            if #available(iOS 18.0, *) {
+                publicKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge, name: name, userID: userId, requestStyle: .conditional)
+            } else {
+                fatalError("Automatic Enrollment is supported on iOS 18 and above")
+            }
+        } else {
+            publicKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge, name: name, userID: userId)
+        }
 
-        // Use only ASAuthorizationPlatformPublicKeyCredentialRegistrationRequests or
-        // ASAuthorizationSecurityKeyPublicKeyCredentialRegistrationRequests here.
         let authController = ASAuthorizationController(authorizationRequests: [ registrationRequest ] )
         authController.delegate = shared
         authController.presentationContextProvider = shared
+
+        print("🚀 Performing passkey registration request...")
         authController.performRequests()
     }
     
@@ -43,31 +57,19 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
             return
         }
         shared.authenticationAnchor = anchor
+        shared.isRegistrationFlow = false
         let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: Passkeys.Domain)
 
         let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: challenge)
 
-        // Also allow the user to use a saved password, if they have one.
-        let passwordCredentialProvider = ASAuthorizationPasswordProvider()
-        let passwordRequest = passwordCredentialProvider.createRequest()
-
-        // Pass in any mix of supported sign-in request types.
-        let authController = ASAuthorizationController(authorizationRequests: [ assertionRequest, passwordRequest ] )
+        // IMPORTANT: Only request passkey authentication, remove password fallback for now
+        let authController = ASAuthorizationController(authorizationRequests: [assertionRequest])
         authController.delegate = shared
         authController.presentationContextProvider = shared
         
-        // If credentials are available, presents a modal sign-in sheet.
-        // If there are no locally saved credentials, no UI appears and
-        // the system passes ASAuthorizationError.Code.canceled to call
-        // `AccountManager.authorizationController(controller:didCompleteWithError:)`.
-        authController.performRequests(options: .preferImmediatelyAvailableCredentials)
-        
-        /*
-        // If credentials are available, presents a modal sign-in sheet.
-        // If there are no locally saved credentials, the system presents a QR code to allow signing in with a
-        // passkey from a nearby device.
+        // Change from .preferImmediatelyAvailableCredentials to standard performRequests()
+        // This will show passkey UI even if no credentials are immediately available
         authController.performRequests()
-         */
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
@@ -75,9 +77,9 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
         
         switch authorization.credential {
         case let credentialRegistration as ASAuthorizationPlatformPublicKeyCredentialRegistration:
+            print("✅ PASSKEY REGISTRATION SUCCESS")
             logger.log("A new passkey was registered: \(credentialRegistration)")
-            // Verify the attestationObject and clientDataJSON with your service.
-            // The attestationObject contains the user's new public key to store and use for subsequent sign-ins.
+
             guard let attestationObject = credentialRegistration.rawAttestationObject else {
                 print("Missing attestationObject")
                 return
@@ -85,28 +87,42 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
             let clientDataJSON = credentialRegistration.rawClientDataJSON
             let credentialID = credentialRegistration.credentialID
             
-            // After the server verifies the registration and creates the user account, sign in the user with the new account.
-            // Build the attestation object
-            let payload = ["rawId": credentialID.base64EncodedString(), // Base64
-                           "id": credentialRegistration.credentialID.base64URLEncode(), // Base64URL
-                           // "authenticatorAttachment": "platform", // Optional
-                           // "clientExtensionResults": [String: Any](), // Optional
-                           "type": "public-key",
-                               "response": [
-                                "attestationObject": attestationObject.base64EncodedString(),
-                                "clientDataJSON": clientDataJSON.base64EncodedString()
-                               ]
+            // Correct WebAuthn attestation structure
+            let payload = [
+                "rawId": credentialID.base64EncodedString(),
+                "id": credentialRegistration.credentialID.base64URLEncode(),
+                "type": "public-key",
+                "response": [
+                    "attestationObject": attestationObject.base64EncodedString(),
+                    "clientDataJSON": clientDataJSON.base64EncodedString()
+                ]
             ] as [String: Any]
             
-            if let payloadJSONData = try? JSONSerialization.data(withJSONObject: payload, options: .fragmentsAllowed) {
+            if let payloadJSONData = try? JSONSerialization.data(withJSONObject: payload, options: []) {
                 guard let payloadJSONText = String(data: payloadJSONData, encoding: .utf8) else { return }
                 PKDataManager.shared.attestation = payloadJSONText
+                print("📋 Attestation payload created: \(payloadJSONText)")
             }
             
             didFinishSignUp()
+
         case let credentialAssertion as ASAuthorizationPlatformPublicKeyCredentialAssertion:
+            print("✅ PASSKEY AUTHENTICATION SUCCESS")
             logger.log("A passkey was used to sign in: \(credentialAssertion)")
-            // Verify the below signature and clientDataJSON with your service for the given userID.
+
+            // Grab the WebAuthn user handle (opaque bytes) from the assertion
+            guard let userID = credentialAssertion.userID else {
+                print("Missing userID")
+                return
+            }
+
+            // Persist it for later flows (e.g., registration chaining, debugging)
+            PKDataManager.shared.userIdData = userID
+            if let decoded = String(data: userID, encoding: .utf8), !decoded.isEmpty {
+                PKDataManager.shared.username = decoded
+                print("✅ Extracted username from userHandle: \(decoded)")
+            }
+
             guard let signature = credentialAssertion.signature else {
                 print("Missing signature")
                 return
@@ -115,41 +131,43 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
                 print("Missing authenticatorData")
                 return
             }
-            guard let userID = credentialAssertion.userID else {
-                print("Missing userID")
-                return
-            }
+
             let clientDataJSON = credentialAssertion.rawClientDataJSON
             let credentialId = credentialAssertion.credentialID
-        
-            let payload = ["rawId": credentialId.base64EncodedString(), // Base64
-                           "id": credentialId.base64URLEncode(), // Base64URL
-                           // "authenticatorAttachment": "platform", // Optional
-                           // "clientExtensionResults": [String: Any](), // Optional
-                           "type": "public-key",
-                               "response": [
-                                "clientDataJSON": clientDataJSON.base64EncodedString(),
-                                "authenticatorData": authenticatorData.base64EncodedString(),
-                                "signature": signature.base64EncodedString(),
-                                "userHandle": userID.base64URLEncode()
-                               ]
-            ] as [String: Any]
-            
-            if let payloadJSONData = try? JSONSerialization.data(withJSONObject: payload, options: .fragmentsAllowed) {
-                guard let payloadJSONText = String(data: payloadJSONData, encoding: .utf8) else { return }
+
+            // Correct WebAuthn assertion structure
+            let payload: [String: Any] = [
+                "rawId": credentialId.base64URLEncode(),
+                "id": credentialId.base64URLEncode(),
+                "type": "public-key",
+                "response": [
+                    "clientDataJSON": clientDataJSON.base64EncodedString(),
+                    "authenticatorData": authenticatorData.base64EncodedString(),
+                    "signature": signature.base64EncodedString(),
+                    "userHandle": userID.base64URLEncode()
+                ]
+            ]
+
+            if let payloadJSONData = try? JSONSerialization.data(withJSONObject: payload, options: []),
+               let payloadJSONText = String(data: payloadJSONData, encoding: .utf8) {
                 PKDataManager.shared.assertion = payloadJSONText
+                print("📋 Assertion payload created: \(payloadJSONText)")
             }
- 
+
             didFinishSignIn()
+
         case let passwordCredential as ASPasswordCredential:
+            print("⚠️ PASSWORD AUTHENTICATION (NOT PASSKEY)")
             logger.log("A password was provided: \(passwordCredential)")
-            // Verify the userName and password with your service.
-            // let userName = passwordCredential.user
-            // let password = passwordCredential.password
-            // After the server verifies the userName and password, sign in the user.
-            print("After the server verifies the userName and password (not passkeys), sign in the user.")
+
+            // Handle password authentication if you want to support it
+            let userName = passwordCredential.user
+            let password = passwordCredential.password
+            print("Username: \(userName)")
+            // You could send this to your server for password verification
 
         default:
+            print("❌ UNKNOWN AUTHENTICATION TYPE")
             fatalError("Received unknown authorization type.")
         }
     }
@@ -161,21 +179,74 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
             return
         }
 
-        if authorizationError.code == .canceled {
-            // Either the system doesn't find any credentials and the request ends silently, or the user cancels the request.
-            // This is a good time to show a traditional login form, or ask the user to create an account.
-            logger.log("Request canceled.")
-        
-            // Assuming no credentials found, trying to register
-            needSignUp()
-        } else {
-            // Another ASAuthorization error.
-            // Note: The userInfo dictionary contains useful information.
+        switch authorizationError.code {
+        case .canceled:
+            logger.log("Request canceled - no passkeys found, user canceled, or domain issue")
+
+            if !isRegistrationFlow {
+                // Authentication was canceled - likely no passkeys available
+                print("🔄 Authentication canceled, attempting registration flow...")
+                handleAuthenticationFailure()
+            } else {
+                // Registration was canceled by user
+                print("👤 User canceled registration")
+                // Don't show another dialog if user explicitly canceled
+                print("💡 User can try registration again from the main interface")
+            }
+
+        case .invalidResponse:
+            logger.error("Invalid response from authenticator")
+            showErrorAlert("Invalid response from authenticator")
+
+        case .notHandled:
+            logger.error("Request not handled - possible domain configuration issue")
+            showErrorAlert("Request not handled - check domain configuration")
+
+        case .failed:
+            logger.error("Authentication failed: \(authorizationError.localizedDescription)")
+            showErrorAlert("Authentication failed: \(authorizationError.localizedDescription)")
+
+        default:
             logger.error("Error: \((error as NSError).userInfo)")
+            showErrorAlert("Unknown error occurred")
         }
-        if let vc = PKManager.shared.authenticationAnchor?.rootViewController {
-            Alert.generic(viewController: vc, message: nil, error: error as NSError)
+    }
+
+    private func handleAuthenticationFailure() {
+        print("🔍 Handling authentication failure...")
+
+        // Clear any existing authentication data
+        PKDataManager.shared.challenge = nil
+        PKDataManager.shared.deviceAuthenticationId = nil
+
+        DispatchQueue.main.async {
+            // Use the new dialog system instead of hardcoded registration
+            PKDeviceFlowManager.handleNoPasskeysFound()
         }
+    }
+
+    private func showErrorAlert(_ message: String) {
+        guard let vc = authenticationAnchor?.rootViewController else { return }
+
+        // Make sure we don't stack alerts
+        if vc.presentedViewController is UIAlertController {
+            vc.presentedViewController?.dismiss(animated: false) {
+                self.presentErrorAlert(vc, message)
+            }
+        } else {
+            presentErrorAlert(vc, message)
+        }
+    }
+
+    private func presentErrorAlert(_ vc: UIViewController, _ message: String) {
+        let alert = UIAlertController(
+            title: "Passkey Error",
+            message: message,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        vc.present(alert, animated: true)
     }
 
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
@@ -183,13 +254,63 @@ class PKManager: NSObject, ASAuthorizationControllerPresentationContextProviding
     }
 
     func didFinishSignIn() {
-        NotificationCenter.default.post(name: .UserSignedIn, object: nil)
+        print("🎉 Passkey authentication completed locally")
+        // Try to extract username from various possible locations
+        let username = PKDataManager.shared.username ?? "Unknown User"
+        print("✅ Authentication successful for user: \(username)")
+        NotificationCenter.default.post(name: .UserSignedIn, object: ["username": username])
     }
+
     func needSignUp() {
         NotificationCenter.default.post(name: .UserNeedSignUp, object: nil)
     }
     
     func didFinishSignUp() {
+        print("🎉 Passkey registration completed locally")
         NotificationCenter.default.post(name: .UserSignedUp, object: nil)
+    }
+
+    static func signInWithPasskeyOnly(anchor: ASPresentationAnchor) {
+        guard let challenge = PKDataManager.shared.challenge else {
+            print("No challenge from server")
+            return
+        }
+
+        shared.authenticationAnchor = anchor
+        shared.isRegistrationFlow = false
+        let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: Passkeys.Domain)
+
+        let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: challenge)
+
+        // Only request passkey authentication - no password fallback
+        let authController = ASAuthorizationController(authorizationRequests: [assertionRequest])
+        authController.delegate = shared
+        authController.presentationContextProvider = shared
+
+        print("🔐 Requesting passkey authentication only")
+        authController.performRequests(options: .preferImmediatelyAvailableCredentials)
+    }
+
+    static func signInWithBothOptions(anchor: ASPresentationAnchor) {
+        guard let challenge = PKDataManager.shared.challenge else {
+            print("No challenge from server")
+            return
+        }
+
+        shared.authenticationAnchor = anchor
+        shared.isRegistrationFlow = false
+        let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: Passkeys.Domain)
+        let passwordCredentialProvider = ASAuthorizationPasswordProvider()
+
+        let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: challenge)
+        let passwordRequest = passwordCredentialProvider.createRequest()
+
+        let authController = ASAuthorizationController(authorizationRequests: [assertionRequest, passwordRequest])
+        authController.delegate = shared
+        authController.presentationContextProvider = shared
+
+        print("🔐 Requesting both passkey and password authentication")
+        // Try immediate credentials first, fall back to full UI if needed
+        authController.performRequests(options: .preferImmediatelyAvailableCredentials)
     }
 }

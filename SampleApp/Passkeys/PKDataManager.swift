@@ -14,6 +14,7 @@ enum PingOneStatus: String, Codable {
 
 struct SignInResponse: Codable {
     let additionalProperties: AdditionalProperties?
+    let parameters: Parameters?
 }
 
 struct SignUpResponse: Codable {

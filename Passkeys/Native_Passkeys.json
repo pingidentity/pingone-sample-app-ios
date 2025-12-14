@@ -1,5 +1,5 @@
 {
-  "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba",
+  "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc",
   "authTokenExpireIds": [],
   "connectorIds": [
     "pingOneMfaConnector",
@@ -9,10 +9,10 @@
     "functionsConnector",
     "variablesConnector"
   ],
-  "createdDate": 1695300693670,
-  "currentVersion": 14,
-  "customerId": "ad1f86cfb5e298bd8ce1c6e8fab6b96d",
-  "deployedDate": 1695300797959,
+  "createdDate": 1759916122640,
+  "currentVersion": 6,
+  "customerId": "584022dbcf542eb69b7f84377bb5612e",
+  "deployedDate": 1759916127592,
   "description": "Passkeys Flow",
   "flowStatus": "enabled",
   "inputSchemaCompiled": {
@@ -62,11 +62,14 @@
   "isInputSchemaSaved": true,
   "isOutputSchemaSaved": false,
   "name": "Native Passkeys",
-  "publishedVersion": 14,
+  "publishedVersion": 6,
   "settings": {
     "csp": "worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com https://devsdk.singularkey.com http://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval';",
     "intermediateLoadingScreenCSS": "",
     "intermediateLoadingScreenHTML": "",
+    "customTimeoutErrorScreenMessage": "",
+    "customTimeoutErrorScreenHTML": "",
+    "customTimeoutErrorScreenCSS": "",
     "pingOneFlow": true,
     "logLevel": 3
   },
@@ -74,9 +77,9 @@
   "trigger": {
     "type": "AUTHENTICATION"
   },
-  "updatedDate": 1695300797961,
-  "flowId": "bc2d481b742dc6608bae81fc3c6b1469",
-  "versionId": 14,
+  "updatedDate": 1759916127635,
+  "flowId": "b9d9fdf326d3e35ceb1df644e167add6",
+  "versionId": 6,
   "graphData": {
     "elements": {
       "nodes": [
@@ -305,7 +308,7 @@
                 "value": "[\n  {\n    \"children\": [\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"type\": \"link\",\n        \"src\": \"variable.svg\",\n        \"url\": \"fidoAttestation\",\n        \"data\": \"{{global.variables.fidoAttestation}}\",\n        \"tooltip\": \"{{global.variables.fidoAttestation}}\",\n        \"children\": [\n          {\n            \"text\": \"fidoAttestation\"\n          }\n        ]\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      }\n    ]\n  }\n]"
               },
               "origin": {
-                "value": "[\n  {\n    \"children\": [\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"type\": \"link\",\n        \"src\": \"variable.svg\",\n        \"url\": \"origin\",\n        \"data\": \"{{global.variables.origin}}\",\n        \"tooltip\": \"{{global.variables.origin}}\",\n        \"children\": [\n          {\n            \"text\": \"origin\"\n          }\n        ]\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      }\n    ]\n  }\n]"
+                "value": "[\n  {\n    \"children\": [\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"type\": \"link\",\n        \"src\": \"variable.svg\",\n        \"url\": \"rpid\",\n        \"data\": \"{{global.variables.rpid}}\",\n        \"tooltip\": \"{{global.variables.rpid}}\",\n        \"children\": [\n          {\n            \"text\": \"rpid\"\n          }\n        ]\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      }\n    ]\n  }\n]"
               }
             }
           },
@@ -1305,13 +1308,6 @@
                     "key": 0.4033975692817331,
                     "label": "rpid (string - flowInstance)",
                     "type": "string"
-                  },
-                  {
-                    "name": "origin",
-                    "value": "[\n  {\n    \"children\": [\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"type\": \"moustache\",\n        \"data\": \"{{global.parameters.authorizationRequest.origin}}\",\n        \"name\": \"origin\",\n        \"children\": [\n          {\n            \"text\": \"\"\n          }\n        ]\n      },\n      {\n        \"text\": \"\"\n      },\n      {\n        \"text\": \"\"\n      }\n    ]\n  }\n]",
-                    "key": 0.10547764854210229,
-                    "type": "string",
-                    "label": "origin (string - flowInstance)"
                   }
                 ]
               }
@@ -1352,6 +1348,44 @@
       "edges": [
         {
           "data": {
+            "id": "2ws0zrox76",
+            "source": "nnyddyrbrf",
+            "target": "9xg3u5cpap"
+          },
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "group": "edges",
+          "removed": false,
+          "selected": false,
+          "selectable": true,
+          "locked": false,
+          "grabbable": true,
+          "pannable": true,
+          "classes": ""
+        },
+        {
+          "data": {
+            "id": "t149r1bsw6",
+            "source": "qg3jdvwrbs",
+            "target": "yhvoc0ax3c"
+          },
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "group": "edges",
+          "removed": false,
+          "selected": false,
+          "selectable": true,
+          "locked": false,
+          "grabbable": true,
+          "pannable": true,
+          "classes": ""
+        },
+        {
+          "data": {
             "id": "y1bpcbb2sk",
             "source": "3mwew30bxh",
             "target": "6wxe0ol7gb"
@@ -1371,9 +1405,9 @@
         },
         {
           "data": {
-            "id": "twz6rnjotx",
-            "source": "vx36gcpjx3",
-            "target": "3mwew30bxh"
+            "id": "kerrqi323e",
+            "source": "f7x0sdstu4",
+            "target": "nnyddyrbrf"
           },
           "position": {
             "x": 0,
@@ -1983,47 +2017,9 @@
         },
         {
           "data": {
-            "id": "t149r1bsw6",
-            "source": "qg3jdvwrbs",
-            "target": "yhvoc0ax3c"
-          },
-          "position": {
-            "x": 0,
-            "y": 0
-          },
-          "group": "edges",
-          "removed": false,
-          "selected": false,
-          "selectable": true,
-          "locked": false,
-          "grabbable": true,
-          "pannable": true,
-          "classes": ""
-        },
-        {
-          "data": {
-            "id": "kerrqi323e",
-            "source": "f7x0sdstu4",
-            "target": "nnyddyrbrf"
-          },
-          "position": {
-            "x": 0,
-            "y": 0
-          },
-          "group": "edges",
-          "removed": false,
-          "selected": false,
-          "selectable": true,
-          "locked": false,
-          "grabbable": true,
-          "pannable": true,
-          "classes": ""
-        },
-        {
-          "data": {
-            "id": "2ws0zrox76",
-            "source": "nnyddyrbrf",
-            "target": "9xg3u5cpap"
+            "id": "8p4iotu9q1",
+            "source": "vx36gcpjx3",
+            "target": "3mwew30bxh"
           },
           "position": {
             "x": 0,
@@ -2096,11 +2092,11 @@
     }
   ],
   "flowColor": "#ff661c",
-  "savedDate": 1695300693187,
+  "savedDate": 1759916122342,
   "variables": [
     {
       "context": "flowInstance",
-      "createdDate": 1695112402007,
+      "createdDate": 1759655298622,
       "fields": {
         "type": "string",
         "displayName": "",
@@ -2108,75 +2104,15 @@
         "min": 0,
         "max": 2000
       },
-      "type": "property",
-      "visibility": "private",
-      "name": "userId##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
-    },
-    {
-      "context": "flowInstance",
-      "createdDate": 1695112402006,
-      "fields": {
-        "type": "string",
-        "displayName": "",
-        "mutable": true,
-        "min": 0,
-        "max": 2000
-      },
-      "type": "property",
-      "visibility": "private",
-      "name": "deviceId##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
-    },
-    {
-      "context": "flowInstance",
-      "createdDate": 1695112402007,
-      "fields": {
-        "type": "string",
-        "displayName": "",
-        "mutable": true,
-        "min": 0,
-        "max": 2000
-      },
-      "type": "property",
-      "visibility": "private",
-      "name": "fidoAttestation##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
-    },
-    {
-      "context": "flowInstance",
-      "createdDate": 1695296818345,
-      "customerId": "ad1f86cfb5e298bd8ce1c6e8fab6b96d",
-      "fields": {
-        "type": "string",
-        "displayName": "",
-        "mutable": true,
-        "min": 0,
-        "max": 2000
-      },
-      "type": "property",
-      "visibility": "private",
-      "name": "origin##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
-    },
-    {
-      "context": "flowInstance",
-      "createdDate": 1695112402006,
-      "fields": {
-        "type": "string",
-        "displayName": "",
-        "mutable": true,
-        "min": 0,
-        "max": 2000
-      },
+      "id": "31d06d14-a839-4ad6-bd39-5e84967aa696",
       "type": "property",
       "visibility": "private",
       "name": "deviceAuthenticationId##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
     },
     {
       "context": "flowInstance",
-      "createdDate": 1695112402005,
+      "createdDate": 1759655298621,
       "fields": {
         "type": "string",
         "displayName": "",
@@ -2184,14 +2120,63 @@
         "min": 0,
         "max": 2000
       },
+      "id": "42c901c3-71f3-4457-8e12-7338e09e020d",
       "type": "property",
       "visibility": "private",
-      "name": "fidoAssertion##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
+      "name": "deviceId##SK##flowInstance",
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
     },
     {
       "context": "flowInstance",
-      "createdDate": 1695112402008,
+      "createdDate": 1759655298622,
+      "fields": {
+        "type": "string",
+        "displayName": "",
+        "mutable": true,
+        "min": 0,
+        "max": 2000
+      },
+      "id": "fc836632-8d5c-499a-bfba-b47904fa1d1c",
+      "type": "property",
+      "visibility": "private",
+      "name": "fidoAssertion##SK##flowInstance",
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
+    },
+    {
+      "context": "flowInstance",
+      "createdDate": 1759655298619,
+      "fields": {
+        "type": "string",
+        "displayName": "",
+        "mutable": true,
+        "min": 0,
+        "max": 2000
+      },
+      "id": "b3b7d6c7-4ece-40f5-9933-aec65153914e",
+      "type": "property",
+      "visibility": "private",
+      "name": "fidoAttestation##SK##flowInstance",
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
+    },
+    {
+      "context": "flowInstance",
+      "createdDate": 1759655298621,
+      "fields": {
+        "type": "string",
+        "displayName": "",
+        "mutable": true,
+        "min": 0,
+        "max": 2000
+      },
+      "id": "3ec1da34-8a7d-4e54-83ca-8cab98cdfaa5",
+      "type": "property",
+      "visibility": "private",
+      "name": "password##SK##flowInstance",
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
+    },
+    {
+      "context": "flowInstance",
+      "createdDate": 1759655298624,
       "fields": {
         "type": "string",
         "displayName": "Relying Party ID",
@@ -2199,14 +2184,15 @@
         "min": 0,
         "max": 2000
       },
+      "id": "1486eabc-bda8-4d04-a20e-792b8f862e21",
       "type": "property",
       "visibility": "private",
       "name": "rpid##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
     },
     {
       "context": "flowInstance",
-      "createdDate": 1695112402007,
+      "createdDate": 1759655298621,
       "fields": {
         "type": "string",
         "displayName": "",
@@ -2214,25 +2200,27 @@
         "min": 0,
         "max": 2000
       },
+      "id": "edf85a33-35db-40ce-bd83-bd6fdbd8cc61",
+      "type": "property",
+      "visibility": "private",
+      "name": "userId##SK##flowInstance",
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
+    },
+    {
+      "context": "flowInstance",
+      "createdDate": 1759655298624,
+      "fields": {
+        "type": "string",
+        "displayName": "",
+        "mutable": true,
+        "min": 0,
+        "max": 2000
+      },
+      "id": "77ac8f52-2725-4efa-8f0e-e0607e7107ec",
       "type": "property",
       "visibility": "private",
       "name": "username##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
-    },
-    {
-      "context": "flowInstance",
-      "createdDate": 1695112402006,
-      "fields": {
-        "type": "string",
-        "displayName": "",
-        "mutable": true,
-        "min": 0,
-        "max": 2000
-      },
-      "type": "property",
-      "visibility": "private",
-      "name": "password##SK##flowInstance",
-      "companyId": "8b1a51a1-fce8-4497-9074-b153e02339ba"
+      "companyId": "5dbf51c8-b1e3-488e-aacf-5e2eed6e59dc"
     }
   ],
   "connections": []

@@ -29,21 +29,63 @@ class PasskeysViewController: MainViewController {
             self.didFinishSignUp()
         }
     }
+
+    @IBAction func onSignInTap(_ sender: UIButton) {
+        signIn()
+    }
     
-    @IBAction func onButtonTapped(_ sender: UIButton) {
-        PKDeviceFlowManager.authenticate() { error in
-            DispatchQueue.main.async {
-                if let error {
-                    Alert.generic(viewController: self, message: nil, error: error)
-                } else {
-                    self.signIn()
+    @IBAction func onCreateAccount(_ sender: UIButton) {
+        createAccount()
+    }
+    
+ 
+    func createAccount() {
+        let alert = UIAlertController(title: Passkeys.Login, message: "", preferredStyle: .alert)
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = Passkeys.Username
+            alertTextField.textContentType = .username
+            self.passkeysUsernameTextField = alertTextField
+        }
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = Passkeys.Password
+            alertTextField.textContentType = .password
+            alertTextField.isSecureTextEntry = true
+            self.passkeysPasswordTextField = alertTextField
+        }
+        
+        let action = UIAlertAction(title: Passkeys.Submit, style: .default) { action in
+            guard let username = self.passkeysUsernameTextField?.text else {
+                print("Missing username")
+                return
+            }
+            
+            guard let password = self.passkeysPasswordTextField?.text else {
+                print("Missing password")
+                return
+            }
+            
+            PKDeviceFlowManager.login(username: username, password: password) { error in
+                DispatchQueue.main.async {
+                    if let error {
+                        Alert.generic(viewController: self, message: nil, error: error)
+                    } else {
+                        Alert.generic(viewController: self, message: "\(username) is logged in!", error: error)
+                    }
                 }
             }
         }
+        
+        alert.addAction(action)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            print("👤 User chose not to login")
+        })
+        self.present(alert, animated: true, completion: nil)
     }
+    
+    
     func signUp() {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: Passkeys.RegisterNotice, message: "", preferredStyle: .alert)
+            let alert = UIAlertController(title: Passkeys.LoginToCreatePasskey, message: "", preferredStyle: .alert)
             alert.addTextField { alertTextField in
                 alertTextField.placeholder = Passkeys.Username
                 alertTextField.textContentType = .username
@@ -67,7 +109,7 @@ class PasskeysViewController: MainViewController {
                     return
                 }
                 
-                PKDeviceFlowManager.register(username: username, password: password) { error in
+                PKDeviceFlowManager.loginAndTryCreateKey(username: username, password: password) { error in
                     DispatchQueue.main.async {
                         if let error {
                             Alert.generic(viewController: self, message: nil, error: error)
@@ -87,7 +129,11 @@ class PasskeysViewController: MainViewController {
     func signIn() {
         DispatchQueue.main.async {
             guard let window = self.view.window else { fatalError("The view was not in the app's view hierarchy!") }
-            PKDeviceFlowManager.signIn(anchor: window)
+            PKDeviceFlowManager.signIn(anchor: window) { error in
+                if let error {
+                    Alert.generic(viewController: self, message: nil, error: error)
+                }
+            }
         }
     }
     

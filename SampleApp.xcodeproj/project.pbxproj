@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		10C32F2523BA595F00FA5E71 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA92C20235F00440022D645 /* Constants.swift */; };
-		2E7621522EEEABE500B9ED43 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2E7621512EEEABE500B9ED43 /* AppAuth */; };
-		2E7621542EEEABE500B9ED43 /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2E7621532EEEABE500B9ED43 /* AppAuthCore */; };
 		69155A7A244C4F2800CD0D16 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69155A79244C4F2800CD0D16 /* Extension+UIColor.swift */; };
+		69352AC02DDC92A400B00CE1 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 69352ABF2DDC92A400B00CE1 /* AppAuth */; };
+		69352AC22DDC92A400B00CE1 /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69352AC12DDC92A400B00CE1 /* AppAuthCore */; };
+		69352AC42DDC92A400B00CE1 /* AppAuthTV in Frameworks */ = {isa = PBXBuildFile; productRef = 69352AC32DDC92A400B00CE1 /* AppAuthTV */; };
 		694193A12AA4AA6A00068C90 /* PKDeviceFlowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694193A02AA4AA6A00068C90 /* PKDeviceFlowManager.swift */; };
 		6947240125A61922007CA033 /* PasscodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6947240025A61922007CA033 /* PasscodeViewController.swift */; };
 		697679F32AA06A1F009924DE /* PasskeysViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697679F22AA06A1F009924DE /* PasskeysViewController.swift */; };
@@ -129,9 +130,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E7621522EEEABE500B9ED43 /* AppAuth in Frameworks */,
+				69352AC02DDC92A400B00CE1 /* AppAuth in Frameworks */,
 				69E28C2D2DCA207E003A2255 /* PingOneSDK in Frameworks */,
-				2E7621542EEEABE500B9ED43 /* AppAuthCore in Frameworks */,
+				69352AC42DDC92A400B00CE1 /* AppAuthTV in Frameworks */,
+				69352AC22DDC92A400B00CE1 /* AppAuthCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,8 +368,9 @@
 			name = SampleApp;
 			packageProductDependencies = (
 				69E28C2C2DCA207E003A2255 /* PingOneSDK */,
-				2E7621512EEEABE500B9ED43 /* AppAuth */,
-				2E7621532EEEABE500B9ED43 /* AppAuthCore */,
+				69352ABF2DDC92A400B00CE1 /* AppAuth */,
+				69352AC12DDC92A400B00CE1 /* AppAuthCore */,
+				69352AC32DDC92A400B00CE1 /* AppAuthTV */,
 			);
 			productName = SampleApp;
 			productReference = 7BA5246C229AA65200DD0E06 /* SampleApp.app */;
@@ -407,7 +410,7 @@
 			mainGroup = 7BA52463229AA65200DD0E06;
 			packageReferences = (
 				69E28C2B2DCA207E003A2255 /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */,
-				2E7621502EEEABE500B9ED43 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
+				69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 			);
 			productRefGroup = 7BA5246D229AA65200DD0E06 /* Products */;
 			projectDirPath = "";
@@ -733,7 +736,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2E7621502EEEABE500B9ED43 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+		69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
 			requirement = {
@@ -743,24 +746,29 @@
 		};
 		69E28C2B2DCA207E003A2255 /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
+            repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
 			requirement = {
-				branch = main;
+                branch = main;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2E7621512EEEABE500B9ED43 /* AppAuth */ = {
+		69352ABF2DDC92A400B00CE1 /* AppAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2E7621502EEEABE500B9ED43 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			package = 69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
 			productName = AppAuth;
 		};
-		2E7621532EEEABE500B9ED43 /* AppAuthCore */ = {
+		69352AC12DDC92A400B00CE1 /* AppAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2E7621502EEEABE500B9ED43 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			package = 69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
 			productName = AppAuthCore;
+		};
+		69352AC32DDC92A400B00CE1 /* AppAuthTV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuthTV;
 		};
 		69E28C2C2DCA207E003A2255 /* PingOneSDK */ = {
 			isa = XCSwiftPackageProductDependency;

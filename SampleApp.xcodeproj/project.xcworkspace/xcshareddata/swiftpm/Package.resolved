@@ -1,5 +1,5 @@
 {
-  "originHash" : "b3fd86ef8c4c9af9927433d4735ceda57a07de8968368d27236cf76dbe1e8f5c",
+  "originHash" : "771d3fed8f6edac32b5e30c46e4efb6ce356a1734f54ffed1261a5ca1c45185c",
   "pins" : [
     {
       "identity" : "appauth-ios",
@@ -13,10 +13,10 @@
     {
       "identity" : "pingone-mobile-sdk-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pingidentity/pingone-mobile-sdk-ios.git",
+      "location" : "git@gitlab.corp.pingidentity.com:github-clones/pingone-mobile-sdk-ios.git",
       "state" : {
         "branch" : "main",
-        "revision" : "7e8e3066683120926a690fae756d7f66d4ead784"
+        "revision" : "9a98741c80261a109e70ef4da5df410d35363d9a"
       }
     }
   ],

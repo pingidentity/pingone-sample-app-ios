@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		10C32F2523BA595F00FA5E71 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA92C20235F00440022D645 /* Constants.swift */; };
-		2EC162122F5486E100FF27DC /* PingOneSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 2EC162112F5486E100FF27DC /* PingOneSDK */; };
+		2EC162182F549AB500FF27DC /* PingOneSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 2EC162172F549AB500FF27DC /* PingOneSDK */; };
 		69155A7A244C4F2800CD0D16 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69155A79244C4F2800CD0D16 /* Extension+UIColor.swift */; };
 		69352AC02DDC92A400B00CE1 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 69352ABF2DDC92A400B00CE1 /* AppAuth */; };
 		69352AC22DDC92A400B00CE1 /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69352AC12DDC92A400B00CE1 /* AppAuthCore */; };
@@ -130,7 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2EC162122F5486E100FF27DC /* PingOneSDK in Frameworks */,
+				2EC162182F549AB500FF27DC /* PingOneSDK in Frameworks */,
 				69352AC02DDC92A400B00CE1 /* AppAuth in Frameworks */,
 				69352AC42DDC92A400B00CE1 /* AppAuthTV in Frameworks */,
 				69352AC22DDC92A400B00CE1 /* AppAuthCore in Frameworks */,
@@ -370,7 +370,7 @@
 				69352ABF2DDC92A400B00CE1 /* AppAuth */,
 				69352AC12DDC92A400B00CE1 /* AppAuthCore */,
 				69352AC32DDC92A400B00CE1 /* AppAuthTV */,
-				2EC162112F5486E100FF27DC /* PingOneSDK */,
+				2EC162172F549AB500FF27DC /* PingOneSDK */,
 			);
 			productName = SampleApp;
 			productReference = 7BA5246C229AA65200DD0E06 /* SampleApp.app */;
@@ -410,7 +410,7 @@
 			mainGroup = 7BA52463229AA65200DD0E06;
 			packageReferences = (
 				69352ABE2DDC92A400B00CE1 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
-				2EC162102F5486E100FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */,
+				2EC162162F549AB500FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */,
 			);
 			productRefGroup = 7BA5246D229AA65200DD0E06 /* Products */;
 			projectDirPath = "";
@@ -736,11 +736,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2EC162102F5486E100FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */ = {
+		2EC162162F549AB500FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-            repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
+			repositoryURL = "https://github.com/pingidentity/pingone-mobile-sdk-ios.git";
 			requirement = {
-                branch = main;
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -755,9 +755,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2EC162112F5486E100FF27DC /* PingOneSDK */ = {
+		2EC162172F549AB500FF27DC /* PingOneSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2EC162102F5486E100FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */;
+			package = 2EC162162F549AB500FF27DC /* XCRemoteSwiftPackageReference "pingone-mobile-sdk-ios" */;
 			productName = PingOneSDK;
 		};
 		69352ABF2DDC92A400B00CE1 /* AppAuth */ = {

@@ -177,13 +177,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     Alert.approveDeny(viewController: displayOnVc, title: title, message: msg) { (approved) in
                         if let approved = approved {
                             if approved {
-                                notificationObject.approve(withAuthenticationMethod: "user", completionHandler: { (error) in
+                                notificationObject.approve(withAuthenticationMethod: "user") { confirmationInfo, error in
                                     if error != nil {
                                         Alert.generic(viewController: displayOnVc, message: msg, error: error)
                                     }
-                                })
+                                }
                             } else {
-                                notificationObject.deny(completionHandler: { (error) in
+                                notificationObject.deny(reason: .none, completionHandler: { (error) in
                                     if error != nil {
                                         Alert.generic(viewController: displayOnVc, message: msg, error: error)
                                     }
@@ -198,7 +198,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func approveNumMatching(displayOnVc: UIViewController, notificationObject: NotificationObject, numberPicked: Int, title: String, message: String) {
-        notificationObject.approve(withAuthenticationMethod: "user", numberMatchingPickedValue: numberPicked as NSNumber) { error in
+        notificationObject.approve(withAuthenticationMethod: "user", numberMatchingPickedValue: numberPicked as NSNumber) { confirmationInfo, error in
             if error != nil {
                  Alert.generic(viewController: displayOnVc, message: message, error: error)
             }

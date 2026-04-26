@@ -1,5 +1,10 @@
 # Release Notes
 
+## v2.3.0 - April 26th, 2026
+Features:
+
+- Updated SDK to version 2.3.0.
+
 ## v2.2.1 - March 1st, 2026
 Features:
 

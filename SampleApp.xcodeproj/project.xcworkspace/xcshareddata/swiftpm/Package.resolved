@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "git@gitlab.corp.pingidentity.com:github-clones/pingone-mobile-sdk-ios.git",
       "state" : {
-        "revision" : "42dc26b81cafb15877534748ef45ca170285c593",
-        "version" : "2.3.0"
+        "branch" : "main",
+        "revision" : "34be2ab647e533e9ddf5b7a91fc509318f6231dd"
       }
     }
   ],

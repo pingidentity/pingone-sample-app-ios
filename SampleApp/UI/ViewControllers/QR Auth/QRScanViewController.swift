@@ -117,9 +117,20 @@ class QRScanViewController: MainViewController, UITextFieldDelegate, QRCaptureDe
     // MARK: PingOneSDK methods call
     
     func authenticateWith(_ code: String) {
-        PingOne.authenticate(code) { obj, error in
-            self.stopLoadingAnimation()
-            self.handleAuthObject(obj, error)
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let authObject = try await PingOne.authenticate(code)
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    self.handleAuthObject(authObject, nil)
+                }
+            } catch {
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    self.handleAuthObject(nil, error)
+                }
+            }
         }
     }
     

@@ -1,5 +1,11 @@
 # Release Notes
 
+## v2.4.0 - Jul 27th, 2026
+Features:
+
+- Updated SDK to version 2.4.0.
+- Using async PingOne API
+
 ## v2.3.1 - May 17th, 2026
 Features:
 

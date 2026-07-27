@@ -41,16 +41,20 @@ class OIDCViewController: UIViewController {
             print("Error creating URL for: \(OIDC.RedirectURI)")
             return
         }
-        PingOne.generateMobilePayload { payload, error in
-            if let error {
-                Alert.generic(viewController: self, message: nil, error: error)
-            } else if let payload {
-                // builds authentication request
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let payload = try await PingOne.generateMobilePayload()
                 let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: clientSecret, scopes: [OIDScopeOpenID, OIDScopeProfile], redirectURL: redirectURI, responseType: OIDResponseTypeCode, additionalParameters: [OIDCKey.MobilePayload: payload, OIDCKey.PromptKey: OIDCKey.PromptValue])
-
-                // performs authentication request
+                
                 print("Initiating authorization request with scope: \(request.scope ?? "DEFAULT_SCOPE")")
-                self.appAuthRequest(With: request)
+                await MainActor.run {
+                    self.appAuthRequest(With: request)
+                }
+            } catch {
+                await MainActor.run {
+                    Alert.generic(viewController: self, message: nil, error: error as NSError)
+                }
             }
         }
     }
@@ -83,11 +87,19 @@ class OIDCViewController: UIViewController {
     }
 
     func processIdToken(_ idToken: String) {
-        PingOne.processIdToken(idToken) { (pairingObject, error) in
-            if let pairingObject = pairingObject {
-                self.displayNotificationViewAlert(pairingObject)
-            } else if let error = error {
-                print(error.localizedDescription)
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let pairingObject = try await PingOne.processIdToken(idToken)
+                await MainActor.run {
+                    if let pairingObject = pairingObject {
+                        self.displayNotificationViewAlert(pairingObject)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    print(error.localizedDescription)
+                }
             }
         }
     }
@@ -96,9 +108,19 @@ class OIDCViewController: UIViewController {
         Alert.approveDeny(viewController: self, title: Local.Pair) { (approved) in
             if let approved = approved {
                 if approved {
-                    pairingObject.approve(completion: { (response, error) in
-                        Alert.generic(viewController: self, message: Local.DeviceIsPaired, error: error)
-                    })
+                    Task { [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let _ = try await pairingObject.approve()
+                            await MainActor.run {
+                                Alert.generic(viewController: self, message: Local.DeviceIsPaired, error: nil)
+                            }
+                        } catch {
+                            await MainActor.run {
+                                Alert.generic(viewController: self, message: nil, error: error as NSError)
+                            }
+                        }
+                    }
                 }
             }
         }

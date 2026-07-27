@@ -8,5 +8,7 @@
 	<array>
         <string>webcredentials:YOUR_DOMAIN</string>
 	</array>
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>development</string>
 </dict>
 </plist>

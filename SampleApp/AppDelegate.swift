@@ -31,9 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func setUpPingOneSDK() {
         // Configure for NorthAmerica in this case, but can be configured to any PingOneGeo
-        PingOne.configure(geo: .NorthAmerica) { error in
-            if let error {
-                print(error.debugDescription)
+        Task {
+            do {
+                try await PingOne.configure(geo: .NorthAmerica)
+            } catch {
+                print((error as NSError).debugDescription)
             }
         }
     }
@@ -68,7 +70,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         deviceTokenType = .sandbox
         #endif
         
-        PingOne.setDeviceToken(token: deviceToken, type: deviceTokenType) { errors in
+        Task {
+            let errors = await PingOne.setDeviceToken(token: deviceToken, type: deviceTokenType)
             if let errors {
                 for error in errors {
                     print(error.debugDescription)
@@ -80,21 +83,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print("didReceive")
         
-        PingOne.processRemoteNotificationAction(response.actionIdentifier, authenticationMethod: "user", forRemoteNotification: response.notification.request.content.userInfo) { (notificationObject, error) in
-            
-            if let error = error {
-                print("Error: \(String(describing: error))")
-                if error.code == ErrorCode.unrecognizedRemoteNotification.rawValue {
+        Task {
+            do {
+                let notificationObject = try await PingOne.processRemoteNotificationAction(response.actionIdentifier, authenticationMethod: "user", forRemoteNotification: response.notification.request.content.userInfo)
+                if let notificationObject = notificationObject, let userInfo = response.notification.request.content.userInfo as? [String: Any] {
+                    let title = self.getNotificationTextFrom(userInfo).title
+                    let message = self.getNotificationTextFrom(userInfo).body
+                    await MainActor.run {
+                        self.displayNotificationViewAlert(notificationObject, title: title, msg: message)
+                    }
+                }
+            } catch {
+                let nsError = error as NSError
+                print("Error: \(String(describing: nsError))")
+                if nsError.code == ErrorCode.unrecognizedRemoteNotification.rawValue {
                     // Do something else with remote notification.
                 }
-            } else if let notificationObject = notificationObject { // User pressed the actual banner, instead of an action.
-               if let userInfo = response.notification.request.content.userInfo as? [String: Any] {
-                   let title = self.getNotificationTextFrom(userInfo).title
-                   let message = self.getNotificationTextFrom(userInfo).body
-                   self.displayNotificationViewAlert(notificationObject, title: title, msg: message)
-               }
             }
-            DispatchQueue.main.async {
+
+            await MainActor.run {
                 completionHandler()
             }
         }
@@ -103,39 +110,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("didReceiveRemoteNotification userinfo: \(userInfo)")
         
-        PingOne.processRemoteNotification(userInfo) { (notificationObject, error) in
-            if let error = error {
-                print("Error: \(String(describing: error))")
-                if error.code == ErrorCode.unrecognizedRemoteNotification.rawValue {
-                    // Unrecognized remote notification.
-                    completionHandler(UIBackgroundFetchResult.noData)
-                }
-            } else if let notificationObject = notificationObject {
-                self.notificationObject = notificationObject
-                switch notificationObject.notificationType {
-                case .authentication:
-                    
-                    if let userInfo = userInfo as? [String: Any] {
-                        let title = self.getNotificationTextFrom(userInfo).title
-                        let message = self.getNotificationTextFrom(userInfo).body
-                        self.displayNotificationViewAlert(notificationObject, title: title, msg: message)
-                        completionHandler(UIBackgroundFetchResult.newData)
-                    }
-                    
-                case .authCanceled:
-                    DispatchQueue.main.async { // Remove top vc
-                        self.removeTopView({
-                            completionHandler(UIBackgroundFetchResult.noData)
+        Task {
+            let fetchResult: UIBackgroundFetchResult
+
+            do {
+                let notificationObject = try await PingOne.processRemoteNotification(userInfo)
+                if let notificationObject = notificationObject {
+                    self.notificationObject = notificationObject
+                    switch notificationObject.notificationType {
+                    case .authentication:
+                        if let userInfo = userInfo as? [String: Any] {
+                            let title = self.getNotificationTextFrom(userInfo).title
+                            let message = self.getNotificationTextFrom(userInfo).body
+                            await MainActor.run {
+                                self.displayNotificationViewAlert(notificationObject, title: title, msg: message)
                             }
-                        )
+                            fetchResult = .newData
+                        } else {
+                            fetchResult = .noData
+                        }
+                    case .authCanceled:
+                        await self.removeTopViewAsync()
+                        fetchResult = .noData
+                    default:
+                        fetchResult = .noData
                     }
-                default:
-                    print("Error: \(String(describing: error))")
-                    completionHandler(UIBackgroundFetchResult.noData)
+                } else {
+                    fetchResult = .noData
                 }
-            } else {
-                completionHandler(UIBackgroundFetchResult.noData)
+            } catch {
+                let nsError = error as NSError
+                print("Error: \(String(describing: nsError))")
+                if nsError.code == ErrorCode.unrecognizedRemoteNotification.rawValue {
+                    // Unrecognized remote notification.
+                }
+                fetchResult = .noData
             }
+
+            completionHandler(fetchResult)
         }
     }
     
@@ -177,17 +189,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     Alert.approveDeny(viewController: displayOnVc, title: title, message: msg) { (approved) in
                         if let approved = approved {
                             if approved {
-                                notificationObject.approve(withAuthenticationMethod: "user") { confirmationInfo, error in
-                                    if error != nil {
-                                        Alert.generic(viewController: displayOnVc, message: msg, error: error)
+                                Task {
+                                    do {
+                                        let _ = try await notificationObject.approve(withAuthenticationMethod: "user")
+                                    } catch {
+                                        await MainActor.run {
+                                            Alert.generic(viewController: displayOnVc, message: msg, error: error as NSError)
+                                        }
                                     }
                                 }
                             } else {
-                                notificationObject.deny(reason: .none, completionHandler: { (error) in
-                                    if error != nil {
-                                        Alert.generic(viewController: displayOnVc, message: msg, error: error)
+                                Task {
+                                    do {
+                                        try await notificationObject.deny(reason: .none)
+                                    } catch {
+                                        await MainActor.run {
+                                            Alert.generic(viewController: displayOnVc, message: msg, error: error as NSError)
+                                        }
                                     }
-                                })
+                                }
                             }
                         }
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationResponded"), object: nil)
@@ -198,9 +218,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func approveNumMatching(displayOnVc: UIViewController, notificationObject: NotificationObject, numberPicked: Int, title: String, message: String) {
-        notificationObject.approve(withAuthenticationMethod: "user", numberMatchingPickedValue: numberPicked as NSNumber) { confirmationInfo, error in
-            if error != nil {
-                 Alert.generic(viewController: displayOnVc, message: message, error: error)
+        Task {
+            do {
+                let _ = try await notificationObject.approve(withAuthenticationMethod: "user", numberMatchingPickedValue: numberPicked)
+            } catch {
+                await MainActor.run {
+                    Alert.generic(viewController: displayOnVc, message: message, error: error as NSError)
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func removeTopViewAsync() async {
+        await withCheckedContinuation { continuation in
+            self.removeTopView {
+                continuation.resume()
             }
         }
     }
@@ -217,6 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             alertVC.dismiss(animated: false, completion: {
                 completionHandler()
             })
+            return
         }
         completionHandler()
     }

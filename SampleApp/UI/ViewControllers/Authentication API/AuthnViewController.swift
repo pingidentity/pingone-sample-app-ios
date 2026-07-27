@@ -29,13 +29,19 @@ class AuthnViewController: UIViewController {
     
     func startAuthnAPI() {
         startLoadingAnimation()
-    
-        PingOne.generateMobilePayload { payload, error in
-            if let error {
-                self.stopLoadingAnimation()
-                print(error)
-            } else if let payload {
-                self.authenticate(With: payload)
+        
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let payload = try await PingOne.generateMobilePayload()
+                await MainActor.run {
+                    self.authenticate(With: payload)
+                }
+            } catch {
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    print(error)
+                }
             }
         }
     }
@@ -45,26 +51,43 @@ class AuthnViewController: UIViewController {
             guard let self = self else { return }
             
             if serverPayload.count > 0 { // Need pairing
-               PingOne.processIdToken(serverPayload) { (pairingObject, error) in
-                   self.stopLoadingAnimation()
-                   if let pairingObject = pairingObject {
-                       self.displayNotificationViewAlert(pairingObject)
-                   } else if let error = error {
-                       print(error.localizedDescription)
-                   }
-               }
+                Task { [weak self] in
+                    guard let self = self else { return }
+                    do {
+                        let pairingObject = try await PingOne.processIdToken(serverPayload)
+                        await MainActor.run {
+                            self.stopLoadingAnimation()
+                            if let pairingObject = pairingObject {
+                                self.displayNotificationViewAlert(pairingObject)
+                            }
+                        }
+                    } catch {
+                        await MainActor.run {
+                            self.stopLoadingAnimation()
+                            print(error.localizedDescription)
+                        }
+                    }
+                }
             } else {
-               self.stopLoadingAnimation()
+                self.stopLoadingAnimation()
             }
         }
     }
     
     func processIdToken(_ idToken: String) {
-        PingOne.processIdToken(idToken) { (pairingObject, error) in
-            if let pairingObject = pairingObject {
-                self.displayNotificationViewAlert(pairingObject)
-            } else if let error = error {
-                print(error.localizedDescription)
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let pairingObject = try await PingOne.processIdToken(idToken)
+                await MainActor.run {
+                    if let pairingObject = pairingObject {
+                        self.displayNotificationViewAlert(pairingObject)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    print(error.localizedDescription)
+                }
             }
         }
     }
@@ -73,18 +96,22 @@ class AuthnViewController: UIViewController {
         Alert.approveDeny(viewController: self, title: Local.Pair) { approved in
             if let approved = approved {
                 if approved {
-                    pairingObject.approve(completion: { (response, error) in
-                        
-                        if error != nil {
-                            Alert.generic(viewController: self, message: error.debugDescription, error: error)
-                        } else {
-                            Alert.genericWithCompletion(viewController: self, message: Local.DeviceIsPaired, error: nil) {
-                                // AuthnAPI callback after pairing is done
-                                self.authnUI.continueAuthentication(presenter: self)
+                    Task { [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let _ = try await pairingObject.approve()
+                            await MainActor.run {
+                                Alert.genericWithCompletion(viewController: self, message: Local.DeviceIsPaired, error: nil) {
+                                    // AuthnAPI callback after pairing is done
+                                    self.authnUI.continueAuthentication(presenter: self)
+                                }
+                            }
+                        } catch {
+                            await MainActor.run {
+                                Alert.generic(viewController: self, message: nil, error: error as NSError)
                             }
                         }
-                        
-                    })
+                    }
                 }
             }
         }

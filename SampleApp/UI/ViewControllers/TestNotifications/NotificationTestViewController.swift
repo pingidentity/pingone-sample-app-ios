@@ -68,10 +68,14 @@ class NotificationTestViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func initTests() {
-        PingOne.testRemoteNotification(.NorthAmerica) { notificationTests, status, error  in
+        Task { [weak self] in
+            guard let self = self else { return }
+            let (notificationTests, status, error) = await PingOne.testRemoteNotification(.NorthAmerica)
             print("Test summary result is: \(status.name())")
-            self.notificationTests = notificationTests
-            self.runTestsHandler(notificationTests, error)
+            await MainActor.run {
+                self.notificationTests = notificationTests
+                self.runTestsHandler(notificationTests, error)
+            }
         }
     }
     

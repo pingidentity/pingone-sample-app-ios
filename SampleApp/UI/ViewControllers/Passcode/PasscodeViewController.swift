@@ -29,23 +29,25 @@ class PasscodeViewController: UIViewController {
     // MARK: - OTP functions
     
     func getOneTimePasscode() {
-        PingOne.getOneTimePasscode() {[weak self] oneTimePasscodeData, error in
+        Task { [weak self] in
             guard let self = self else {
                 return
             }
-            
-            if let _ = oneTimePasscodeData?.passcode {
-                self.oneTimePasscodeData = oneTimePasscodeData
-                self.initializePasscodeLabel()
-                return
-            }
-            
-            guard let _ = error else {
-                return
-            }
-            DispatchQueue.main.async {
-                self.passCodeLbl.text =  OneTimePasscodeError.notPaired
-                self.timerLbl.text = ""
+
+            do {
+                let oneTimePasscodeData = try await PingOne.getOneTimePasscode()
+                if let _ = oneTimePasscodeData?.passcode {
+                    await MainActor.run {
+                        self.oneTimePasscodeData = oneTimePasscodeData
+                        self.initializePasscodeLabel()
+                    }
+                    return
+                }
+            } catch {
+                await MainActor.run {
+                    self.passCodeLbl.text = OneTimePasscodeError.notPaired
+                    self.timerLbl.text = ""
+                }
             }
         }
     }

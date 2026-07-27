@@ -127,12 +127,20 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
               self.performSegue(withIdentifier: segueID, sender: nil)
             }
         case .sendLogs:
-            PingOne.sendLogs { (supportId, error) in
-                if let supportId = supportId {
-                    Alert.generic(viewController: self, message: "Support ID: \(supportId)", error: nil)
-                    print("Support ID:\(supportId)")
-                } else if let error = error {
-                    print(error.localizedDescription)
+            Task { [weak self] in
+                guard let self = self else { return }
+                do {
+                    let supportId = try await PingOne.sendLogs()
+                    await MainActor.run {
+                        if let supportId = supportId {
+                            Alert.generic(viewController: self, message: "Support ID: \(supportId)", error: nil)
+                            print("Support ID:\(supportId)")
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        print(error.localizedDescription)
+                    }
                 }
             }
         }

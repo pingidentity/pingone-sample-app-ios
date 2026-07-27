@@ -29,10 +29,19 @@ class ManualPairingViewController: UIViewController, UITextFieldDelegate {
         sender?.isUserInteractionEnabled = false
         
         if let pairingKeyText = pairingKeyTextField.text {
-            PingOne.pair(pairingKeyText) { (reponse, error) in
-                DispatchQueue.main.async {
-                    sender?.isUserInteractionEnabled = true
-                    Alert.generic(viewController: self, message: Local.DeviceIsPaired, error: error)
+            Task { [weak self] in
+                guard let self = self else { return }
+                do {
+                    let _ = try await PingOne.pair(pairingKeyText)
+                    await MainActor.run {
+                        sender?.isUserInteractionEnabled = true
+                        Alert.generic(viewController: self, message: Local.DeviceIsPaired, error: nil)
+                    }
+                } catch {
+                    await MainActor.run {
+                        sender?.isUserInteractionEnabled = true
+                        Alert.generic(viewController: self, message: nil, error: error as NSError)
+                    }
                 }
             }
         } else {

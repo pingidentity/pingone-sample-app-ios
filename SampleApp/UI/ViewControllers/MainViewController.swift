@@ -54,11 +54,22 @@ class MainViewController: UIViewController {
     
     func approveUser(userId: String, authObject: AuthenticationObject) {
         startLoadingAnimation()
-        authObject.approve(userId: userId) { status, error in
-            DispatchQueue.main.async {
-                self.stopLoadingAnimation()
-                Alert.genericApproveWithDismiss(viewController: self, title: nil, message: status, error: error as NSError?) {
-                    self.dismissToRoot()
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let status = try await authObject.approve(userId: userId)
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    Alert.genericApproveWithDismiss(viewController: self, title: nil, message: status, error: nil) {
+                        self.dismissToRoot()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    Alert.genericApproveWithDismiss(viewController: self, title: nil, message: nil, error: error as NSError) {
+                        self.dismissToRoot()
+                    }
                 }
             }
         }
@@ -66,11 +77,22 @@ class MainViewController: UIViewController {
     
     func denyUser(userId: String, authObject: AuthenticationObject) {
         startLoadingAnimation()
-        authObject.deny(userId) { status, error in
-            DispatchQueue.main.async {
-                self.stopLoadingAnimation()
-                Alert.genericApproveWithDismiss(viewController: self, title: nil, message: status, error: error as NSError?) {
-                    self.dismissToRoot()
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let status = try await authObject.deny(userId)
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    Alert.genericApproveWithDismiss(viewController: self, title: nil, message: status, error: nil) {
+                        self.dismissToRoot()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.stopLoadingAnimation()
+                    Alert.genericApproveWithDismiss(viewController: self, title: nil, message: nil, error: error as NSError) {
+                        self.dismissToRoot()
+                    }
                 }
             }
         }

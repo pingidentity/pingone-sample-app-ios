@@ -13,10 +13,10 @@
     {
       "identity" : "pingone-mobile-sdk-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pingidentity/pingone-mobile-sdk-ios.git",
+      "location" : "git@gitlab.corp.pingidentity.com:github-clones/pingone-mobile-sdk-ios.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "1ec1a333187603a0e05df89c1e0ab999aba8b8d2"
+        "revision" : "f3822cf31ddc8eb4612146195c13777afe3f8872",
+        "version" : "2.4.2"
       }
     }
   ],
